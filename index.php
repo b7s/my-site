@@ -275,7 +275,7 @@
                 "Architecting scalable solutions with Go. ⚙️",
                 "Eliminating bottlenecks and ensuring resilience. 🛡️",
                 "Focused on clean code and robust architecture. 📐",
-                "Mastering the art of backend optimization. �",
+                "Mastering the art of backend optimization. 📊",
                 "From idea to deployment, fully automated. 🤖"
             ];
 
