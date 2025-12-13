@@ -162,7 +162,9 @@ $footerLinks = [
             background-color: rgba(0, 0, 0, 0.65);
             padding: .25rem .75rem;
             border-radius: 12px;
-            display: inline-block;
+            display: inline-flex;
+            align-items: start;
+            gap: 0.5rem;
         }
         
         /* Cursor Blink Animation */
@@ -326,9 +328,11 @@ $footerLinks = [
                     </div>
                 </div>
 
-                <div class="terminal-line text-white mt-8 pb-6 min-h-[6.2rem] sm:min-h-0 flex items-start">
-                    <span class="text-green-400 font-bold flex-shrink-0">brunots.dev:<span class="text-green-600">~$</span></span> 
-                    <span id="dynamic-prompt" class="text-prompt-text ml-2 line-clamp-3 overflow-hidden"></span>
+                <div class="terminal-line terminal-command text-white mt-8 pb-6 min-h-[6.2rem] sm:min-h-0 flex items-start">
+                    <div class="line items-center">
+                        <span class="text-green-400 font-bold flex-shrink-0">brunots.dev:<span class="text-green-600">~$</span></span> 
+                        <span id="dynamic-prompt" class="text-prompt-text line-clamp-3 overflow-hidden"></span>
+                    </div>
                 </div>
             </div>
         </div>
