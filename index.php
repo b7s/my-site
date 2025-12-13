@@ -39,7 +39,7 @@ $solutions = [
         'title' => 'More Corporate &amp; Public Solutions',
         'url' => 'https://github.com/b7s',
         'description' => 'And that\'s just the beginning — explore many other powerful solutions on my GitHub',
-        'fix_type' => 'CHORE'
+        'type' => 'CHORE'
     ]
 ];
 
@@ -119,7 +119,7 @@ $footerLinks = [
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 30px 20px;
+            padding: 20px 20px;
         }
 
         .terminal-window {
@@ -159,7 +159,7 @@ $footerLinks = [
         }
 
         .terminal-command .line {
-            background-color: rgba(0, 0, 0, 0.55);
+            background-color: rgba(0, 0, 0, 0.65);
             padding: .25rem .75rem;
             border-radius: 12px;
             display: inline-block;
@@ -234,9 +234,9 @@ $footerLinks = [
         
         <div class="terminal-header flex items-center p-3 border-b border-gray-800 flex-shrink-0">
             <div class="flex space-x-2">
-                <div class="w-3 h-3 bg-red-500 rounded-full" title="Close"></div>
-                <div class="w-3 h-3 bg-yellow-500 rounded-full" title="Minimize"></div>
-                <div class="w-3 h-3 bg-green-500 rounded-full" title="Maximize"></div>
+                <div class="w-3 h-3 bg-slate-500 rounded-full" title="Close"></div>
+                <div class="w-3 h-3 bg-slate-500 rounded-full" title="Minimize"></div>
+                <div class="w-3 h-3 bg-slate-500 rounded-full" title="Maximize"></div>
             </div>
             <div class="flex-grow text-center text-sm font-semibold text-gray-400 select-none cursor-default">
                 brunots.dev
@@ -291,12 +291,12 @@ $footerLinks = [
                             <span class="text-prompt-text">ls -F ./solutions/</span>
                         </div>
                     </div>
-                    <div class="ml-4 space-y-4 mb-8">
+                    <div class="ml-4 space-y-3 mb-8">
                         <?php foreach ($solutions as $solution): ?>
-                        <div class="terminal-line text-gray-200 border-l-2 border-green-500 pl-3 py-1 hover:bg-white/10 transition duration-150 rounded-sm">
+                        <div class="terminal-line text-gray-200 border-l-2 border-green-500 pl-3 py-1 hover:bg-white/10 ransition duration-150 rounded-md">
                             <span class="text-blue-400">[<?= $solution['id'] ?>]</span> <a href="<?= $solution['url'] ?>" target="_blank" class="font-bold text-white hover:underline"><?= $solution['title'] ?></a>
                             <p class="ml-6 text-xs mt-1 italic">
-                                <span class="text-green-400 font-bold">// <?= $solution['fix_type'] ?? 'FIX' ?>:</span> <?= $solution['description'] ?>
+                                <span class="text-green-400 font-bold">// <?= $solution['type'] ?? 'FEAT' ?>:</span> <?= $solution['description'] ?>
                             </p>
                         </div>
                         <?php endforeach; ?>
