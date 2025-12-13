@@ -1,5 +1,7 @@
 <?php
 // Arrays de dados para facilitar manutenção
+$prompt = '<span class="text-green-400 font-bold whitespace-nowrap">brunots.dev:<span class="text-green-600">~$</span></span>';
+
 $developmentFocus = [
     [
         'title' => 'Backend & Concurrency:',
@@ -113,7 +115,10 @@ $footerLinks = [
                 ),
                 linear-gradient(135deg, #101015 0%, #000000 100%); 
 
+            /* Fallback for browsers that don't support dvh */
             height: 100vh;
+            /* Modern dynamic viewport height - adjusts to mobile browser chrome */
+            height: 100dvh;
             overflow: hidden; 
             
             display: flex;
@@ -133,7 +138,11 @@ $footerLinks = [
             width: 100%;
             max-width: 1400px;
             height: 100%; 
-            min-height: calc(100vh - 80px);
+            /* Fallback */
+            min-height: calc(100vh - 40px);
+            /* Modern dynamic viewport */
+            min-height: calc(100dvh - 40px);
+            max-height: 100dvh;
             display: flex;
             flex-direction: column;
         }
@@ -159,7 +168,7 @@ $footerLinks = [
         }
 
         .terminal-command .line {
-            background-color: rgba(0, 0, 0, 0.65);
+            background-color: rgba(0, 0, 0, 0.75);
             padding: .25rem .75rem;
             border-radius: 12px;
             display: inline-flex;
@@ -225,7 +234,13 @@ $footerLinks = [
                 border-radius: 0 !important;
                 border: none !important;
                 max-width: 100% !important;
+                /* Fallback */
                 min-height: 100vh !important;
+                height: 100vh !important;
+                /* Modern dynamic viewport - fixes mobile browser chrome issues */
+                min-height: 100dvh !important;
+                height: 100dvh !important;
+                max-height: 100dvh !important;
             }
         }
     </style>
@@ -259,8 +274,7 @@ $footerLinks = [
                 <div class="terminal-section">
                     <div class="terminal-line terminal-command text-white mb-4">
                         <div class="line">
-                            <span class="text-green-400 font-bold">brunots.dev:<span class="text-green-600">~$</span></span> 
-                            <span class="text-prompt-text">whoami</span>
+                            <?= $prompt ?> <span class="text-prompt-text">whoami</span>
                         </div>
                     </div>
                     <div class="terminal-line text-slate-200 ml-4 mb-8">
@@ -272,8 +286,7 @@ $footerLinks = [
                 <div class="terminal-section">
                     <div class="terminal-line terminal-command text-white mb-4">
                         <div class="line">
-                            <span class="text-green-400 font-bold">brunots.dev:<span class="text-green-600">~$</span></span> 
-                            <span class="text-prompt-text">cat development_focus.txt</span>
+                            <?= $prompt ?> <span class="text-prompt-text">cat focus.txt</span>
                         </div>
                     </div>
                     <ul class="list-none ml-4 space-y-2 mb-8">
@@ -289,8 +302,7 @@ $footerLinks = [
                 <div class="terminal-section">
                     <div class="terminal-line terminal-command text-white mb-4">
                         <div class="line">
-                            <span class="text-green-400 font-bold">brunots.dev:<span class="text-green-600">~$</span></span> 
-                            <span class="text-prompt-text">ls -F ./solutions/</span>
+                            <?= $prompt ?> <span class="text-prompt-text">ls -F ./solutions/</span>
                         </div>
                     </div>
                     <div class="ml-4 space-y-3 mb-8">
@@ -308,8 +320,7 @@ $footerLinks = [
                 <div class="terminal-section">
                     <div class="terminal-line terminal-command text-white mb-4">
                         <div class="line">
-                            <span class="text-green-400 font-bold">brunots.dev:<span class="text-green-600">~$</span></span> 
-                            <span class="text-prompt-text">connect</span>
+                            <?= $prompt ?> <span class="text-prompt-text">connect</span>
                         </div>
                     </div>
                     <div class="ml-4 terminal-line text-slate-200 flex flex-wrap gap-x-6 gap-y-2 mb-8">
@@ -330,8 +341,7 @@ $footerLinks = [
 
                 <div class="terminal-line terminal-command text-white mt-8 pb-6 min-h-[6.2rem] sm:min-h-0 flex items-start">
                     <div class="line items-center">
-                        <span class="text-green-400 font-bold flex-shrink-0">brunots.dev:<span class="text-green-600">~$</span></span> 
-                        <span id="dynamic-prompt" class="text-prompt-text line-clamp-3 overflow-hidden"></span>
+                        <?= $prompt ?> <span id="dynamic-prompt" class="text-prompt-text line-clamp-3 overflow-hidden"></span>
                     </div>
                 </div>
             </div>
