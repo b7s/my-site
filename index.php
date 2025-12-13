@@ -211,7 +211,7 @@
                     </div>
 
                     <div class="terminal-line text-gray-200 border-l-2 border-green-500 pl-3 py-1 hover:bg-white/10 transition duration-150 rounded-sm">
-                        <span class="text-blue-400">[1+n]</span> <a href="javascript:void(0)" class="font-bold text-white hover:underline">More Corporate &amp; Public Solutions</a>
+                        <span class="text-blue-400">[1+n]</span> <a href="https://github.com/b7s" target="_blank" class="font-bold text-white hover:underline">More Corporate &amp; Public Solutions</a>
                         <p class="ml-6 text-xs mt-1 italic">
                             <span class="text-green-400 font-bold">// CHORE:</span> And that's just the beginning — explore many other powerful solutions on my GitHub
                         </p>
