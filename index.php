@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/webp" href="favicon.webp">
-    <title>BrunoTS.dev | Problem Solver, Software Engineer - Laravel, TypeScript, Async Systems</title>
+    <title>BrunoTS.dev | Problem Solver, Software Engineer - Laravel, Async Systems</title>
     <!-- SEO Additions -->
     <meta name="description" content="BrunoTS is a Software Engineer specializing in high-performance system resilience, backend concurrency (PHP/Laravel, Go), and modern frontend development (Vue.js, Tailwind CSS). Focused on resolving bottlenecks and architecting scalable solutions.">
-    <meta name="keywords" content="BrunoTS, brunots.dev, Software Engineer, Laravel, PHP Async, Parallite, TypeScript, Livewire, Vue.js, Tailwind CSS, PostgreSQL, Redis, Problem Solver, High Performance, System Resilience">
+    <meta name="keywords" content="BrunoTS, brunots.dev, Software Engineer, Laravel, FilamentPHP, PHP Async, Parallite, TypeScript, Livewire, Vue.js, Tailwind CSS, PostgreSQL, Redis, Problem Solver, High Performance, System Resilience">
     <!-- End of SEO Additions -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -26,13 +26,13 @@
             background-image: 
                 radial-gradient(
                     ellipse at 30% 20%, 
-                    hsla(240, 70%, 20%, 0.3) 0%, 
-                    transparent 50%
+                    hsla(220, 80%, 30%, 0.5) 0%, 
+                    transparent 55%
                 ),
                 radial-gradient(
                     ellipse at 70% 80%, 
-                    hsla(260, 70%, 15%, 0.25) 0%, 
-                    transparent 50%
+                    hsla(230, 75%, 25%, 0.45) 0%, 
+                    transparent 55%
                 ),
                 linear-gradient(135deg, #101015 0%, #000000 100%); 
 
@@ -171,7 +171,7 @@
                 <ul class="list-none ml-4 space-y-2 mb-8">
                     <li class="terminal-line text-gray-200">
                         <span class="text-green-500 mr-2">*</span> 
-                        <span class="text-white font-semibold">Backend & Concurrency:</span> <span class="text-fuchsia-300 font-bold">Laravel</span>/PHP (as demonstrated by Parallite's <span class="text-amber-300 font-bold">async</span> multitasking library) and high-performance <span class="text-fuchsia-300 font-bold">Go</span> environments.
+                        <span class="text-white font-semibold">Backend & Concurrency:</span> <span class="text-fuchsia-300 font-bold">Laravel</span>/FilamentPHP/PHP (see: Parallite's <span class="text-amber-300 font-bold">async</span> multitasking library) and high-performance <span class="text-fuchsia-300 font-bold">Go</span> environments.
                     </li>
                     <li class="terminal-line text-gray-200">
                         <span class="text-green-500 mr-2">*</span> 
