@@ -5,15 +5,15 @@ $prompt = '<span class="text-green-400 font-bold whitespace-nowrap">brunots.dev:
 $developmentFocus = [
     [
         'title' => 'Backend & Concurrency:',
-        'description' => '<span class="text-fuchsia-300 font-bold">Laravel</span>/FilamentPHP/PHP (see: Parallite\'s <span class="text-amber-300 font-bold">async</span> multitasking library) and high-performance <span class="text-fuchsia-300 font-bold">Go</span> environments.'
+        'description' => '<span class="text-fuchsia-300 font-bold">Laravel</span>/FilamentPHP with <span class="text-amber-300 font-bold">async</span> multitasking (Parallite) and <span class="text-fuchsia-300 font-bold">Go</span> for high-performance.'
     ],
     [
         'title' => 'Data Systems:',
-        'description' => '<span class="text-fuchsia-300 font-bold">PostgreSQL</span> for relational stability and complex query handling, coupled with <span class="text-fuchsia-300 font-bold">Redis</span> for high-speed caching and real-time data persistence.'
+        'description' => '<span class="text-fuchsia-300 font-bold">PostgreSQL</span> for complex queries + <span class="text-fuchsia-300 font-bold">Redis</span> for caching and real-time data.'
     ],
     [
         'title' => 'Frontend & Interface:',
-        'description' => '<span class="text-cyan-300 font-bold">Livewire</span>, <span class="text-cyan-300 font-bold">Vue.js</span> and <span class="text-cyan-300 font-bold">Tailwind CSS</span> for building dynamic, reactive interfaces (e.g., Purrai\'s chat UI) and prioritizing rapid development cycles.'
+        'description' => '<span class="text-cyan-300 font-bold">Livewire</span>, <span class="text-cyan-300 font-bold">Vue.js</span> & <span class="text-cyan-300 font-bold">Tailwind CSS</span> for dynamic, reactive interfaces.'
     ]
 ];
 
@@ -38,10 +38,10 @@ $solutions = [
     ],
     [
         'id' => '1+n',
-        'title' => 'More Corporate &amp; Public Solutions',
+        'title' => 'More Corporate &amp; Public Solutions [see more &#10140;]',
         'url' => 'https://github.com/b7s',
-        'description' => 'And that\'s just the beginning — explore many other powerful solutions on my GitHub',
-        'type' => 'CHORE'
+        'description' => '',
+        'type' => ''
     ]
 ];
 
@@ -49,8 +49,9 @@ $contactLinks = [
     [
         'icon' => '<path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>',
         'label' => 'Email:',
-        'url' => 'mailto:me@brunots.dev',
-        'text' => 'me@brunots.dev'
+        'url' => '#',
+        'text' => base64_encode('me@brunots.dev'),
+        'protected' => true
     ],
     [
         'icon' => '<path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>',
@@ -309,9 +310,11 @@ $footerLinks = [
                         <?php foreach ($solutions as $solution): ?>
                         <div class="terminal-line text-slate-200 border-l-2 border-green-500 pl-3 py-1 hover:bg-white/10 ransition duration-150 rounded-md">
                             <span class="text-blue-400">[<?= $solution['id'] ?>]</span> <a href="<?= $solution['url'] ?>" target="_blank" class="font-bold text-white hover:underline"><?= $solution['title'] ?></a>
+                            <?php if(!empty($solution['description'])) : ?>
                             <p class="ml-6 text-xs mt-1 italic">
                                 <span class="text-green-400 font-bold">// <?= $solution['type'] ?? 'FEAT' ?>:</span> <?= $solution['description'] ?>
                             </p>
+                            <?php endif; ?>
                         </div>
                         <?php endforeach; ?>
                     </div>
@@ -330,7 +333,11 @@ $footerLinks = [
                                 <?= $contact['icon'] ?>
                             </svg>
                             <span class="text-white font-bold"><?= $contact['label'] ?></span> 
-                            <a href="<?= $contact['url'] ?>" <?= strpos($contact['url'], 'mailto:') === false ? 'target="_blank"' : '' ?> class="text-blue-400 hover:text-blue-300 transition ml-1"><?= $contact['text'] ?></a>
+                            <?php if (isset($contact['protected']) && $contact['protected']): ?>
+                            <a href="#" data-protected="<?= $contact['text'] ?>" data-type="mailto" class="protected-link text-blue-400 hover:text-blue-300 transition ml-1"></a>
+                            <?php else: ?>
+                            <a href="<?= $contact['url'] ?>" target="_blank" class="text-blue-400 hover:text-blue-300 transition ml-1"><?= $contact['text'] ?></a>
+                            <?php endif; ?>
                         </span>
                         <?php if ($index < count($contactLinks) - 1): ?>
                         <span class="text-slate-500 hidden sm:inline">|</span>
@@ -367,6 +374,18 @@ $footerLinks = [
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Protected content decoder - decode base64 and setup links
+            document.querySelectorAll('.protected-link').forEach(link => {
+                setTimeout(function() {
+                    const encodedData = link.getAttribute('data-protected');
+                    const linkType = link.getAttribute('data-type');
+                    const decodedData = atob(encodedData);
+                    
+                    link.textContent = decodedData;
+                    link.href = linkType ? linkType + ':' + decodedData : decodedData;
+                }, <?= mt_rand(101, 256) ?>)
+            });
+
             const dynamicPrompt = document.getElementById('dynamic-prompt');
             
             const phrases = [
