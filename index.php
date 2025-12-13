@@ -188,7 +188,10 @@
             
             <!-- Small attribution -->
             <div class="mt-4 text-center text-xs text-gray-400">
-                <p>Website hosted on <a href="http://brunots.dev" class="hover:underline">brunots.dev</a></p>
+                <p>
+                    Website hosted on <a href="http://brunots.dev" class="hover:underline">brunots.dev</a> | 
+                    <a href="https://github.com/b7s/my-site" target="_blank">Source code</a>
+                </p>
             </div>
         </div>
     </div>
