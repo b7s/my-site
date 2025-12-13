@@ -240,7 +240,7 @@ $footerLinks = [
                 <div class="w-3 h-3 bg-slate-500 rounded-full" title="Minimize"></div>
                 <div class="w-3 h-3 bg-slate-500 rounded-full" title="Maximize"></div>
             </div>
-            <div class="flex-grow text-center text-sm font-semibold text-gray-400 select-none cursor-default">
+            <div class="flex-grow text-center text-sm font-semibold text-slate-400 select-none cursor-default">
                 brunots.dev
             </div>
         </div>
@@ -253,7 +253,7 @@ $footerLinks = [
 
                 <div class="terminal-line text-white mb-6">
                     <span class="text-green-400 font-bold">$</span> 
-                    <span class="text-gray-200">Welcome to <strong class="text-cyan-300">BrunoTS</strong>'s Problem-Solving Console.</span>
+                    <span class="text-slate-200">Welcome to <strong class="text-cyan-300">BrunoTS</strong>'s Problem-Solving Console.</span>
                 </div>
 
                 <div class="terminal-section">
@@ -263,7 +263,7 @@ $footerLinks = [
                             <span class="text-prompt-text">whoami</span>
                         </div>
                     </div>
-                    <div class="terminal-line text-gray-200 ml-4 mb-8">
+                    <div class="terminal-line text-slate-200 ml-4 mb-8">
                         <span class="text-white font-bold">&gt;</span> 
                         <span><strong>Bruno</strong>, a <span class="text-cyan-300 font-bold">Software Engineer</span> focused on system resilience and high <span class="text-amber-300 font-bold">performance</span>. My passion is dissecting complex architectures and architecting clean, <span class="text-amber-300 font-bold">scalable</span> solutions using <span class="text-fuchsia-300 font-bold">Laravel</span>, <span class="text-fuchsia-300 font-bold">TypeScript</span>, and modern concurrency techniques. I don't just write code; I am a dedicated <span class="text-cyan-300 font-bold">Problem Solver</span> who resolves bottlenecks and eliminates single points of failure.</span>
                     </div>
@@ -278,7 +278,7 @@ $footerLinks = [
                     </div>
                     <ul class="list-none ml-4 space-y-2 mb-8">
                         <?php foreach ($developmentFocus as $focus): ?>
-                        <li class="terminal-line text-gray-200">
+                        <li class="terminal-line text-slate-200">
                             <span class="text-green-500 mr-2">*</span> 
                             <span class="text-white font-semibold"><?= $focus['title'] ?></span> <?= $focus['description'] ?>
                         </li>
@@ -295,7 +295,7 @@ $footerLinks = [
                     </div>
                     <div class="ml-4 space-y-3 mb-8">
                         <?php foreach ($solutions as $solution): ?>
-                        <div class="terminal-line text-gray-200 border-l-2 border-green-500 pl-3 py-1 hover:bg-white/10 ransition duration-150 rounded-md">
+                        <div class="terminal-line text-slate-200 border-l-2 border-green-500 pl-3 py-1 hover:bg-white/10 ransition duration-150 rounded-md">
                             <span class="text-blue-400">[<?= $solution['id'] ?>]</span> <a href="<?= $solution['url'] ?>" target="_blank" class="font-bold text-white hover:underline"><?= $solution['title'] ?></a>
                             <p class="ml-6 text-xs mt-1 italic">
                                 <span class="text-green-400 font-bold">// <?= $solution['type'] ?? 'FEAT' ?>:</span> <?= $solution['description'] ?>
@@ -312,7 +312,7 @@ $footerLinks = [
                             <span class="text-prompt-text">connect</span>
                         </div>
                     </div>
-                    <div class="ml-4 terminal-line text-gray-200 flex flex-wrap gap-x-6 gap-y-2 mb-8">
+                    <div class="ml-4 terminal-line text-slate-200 flex flex-wrap gap-x-6 gap-y-2 mb-8">
                         <?php foreach ($contactLinks as $index => $contact): ?>
                         <span class="flex items-center whitespace-nowrap">
                             <svg class="w-5 h-5 text-blue-400 mr-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -322,7 +322,7 @@ $footerLinks = [
                             <a href="<?= $contact['url'] ?>" <?= strpos($contact['url'], 'mailto:') === false ? 'target="_blank"' : '' ?> class="text-blue-400 hover:text-blue-300 transition ml-1"><?= $contact['text'] ?></a>
                         </span>
                         <?php if ($index < count($contactLinks) - 1): ?>
-                        <span class="text-gray-500 hidden sm:inline">|</span>
+                        <span class="text-slate-500 hidden sm:inline">|</span>
                         <?php endif; ?>
                         <?php endforeach; ?>
                     </div>
@@ -337,7 +337,7 @@ $footerLinks = [
             </div>
         </div>
 
-        <div class="flex-shrink-0 py-3 text-center text-xs text-gray-400 border-t border-gray-800/50 px-6">
+        <div class="flex-shrink-0 py-3 text-center text-xs text-slate-400 border-t border-gray-800/50 px-6">
             <div class="flex justify-center space-x-4">
                 <?php foreach ($footerLinks as $index => $link): ?>
                 <p class="whitespace-nowrap">
@@ -348,7 +348,7 @@ $footerLinks = [
                     <?php endif; ?>
                 </p>
                 <?php if ($index < count($footerLinks) - 1): ?>
-                <span class="text-gray-500">|</span>
+                <span class="text-slate-500">|</span>
                 <?php endif; ?>
                 <?php endforeach; ?>
             </div>
