@@ -159,6 +159,7 @@ $footerLinks = [
             border-right: 2px solid white; 
             animation: blink 0.7s step-end infinite;
             padding-right: 2px;
+            height: 60px;
         }
         
         /* Custom Scrollbar Styling */
