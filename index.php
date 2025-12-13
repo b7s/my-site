@@ -148,18 +148,39 @@ $footerLinks = [
             word-break: break-word;
         }
         
+        .terminal-section {
+            position: relative;
+        }
+
+        .terminal-command {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .terminal-command .line {
+            background-color: rgba(0, 0, 0, 0.55);
+            padding: .25rem .75rem;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        
         /* Cursor Blink Animation */
         @keyframes blink {
-            0%, 100% { border-right-color: transparent; }
-            50% { border-right-color: white; }
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
         }
 
         #dynamic-prompt {
-            /* Simulate a block cursor */
-            border-right: 2px solid white; 
+            display: inline-block;
+            position: relative;
+        }
+        
+        #dynamic-prompt::after {
+            content: '|';
+            color: white;
             animation: blink 0.7s step-end infinite;
-            padding-right: 2px;
-            height: 60px;
+            margin-left: 2px;
         }
         
         /* Custom Scrollbar Styling */
@@ -233,65 +254,81 @@ $footerLinks = [
                     <span class="text-gray-200">Welcome to <strong class="text-cyan-300">BrunoTS</strong>'s Problem-Solving Console.</span>
                 </div>
 
-                <div class="terminal-line text-white mb-4">
-                    <span class="text-green-400 font-bold">brunots.dev:<span class="text-green-600">~$</span></span> 
-                    <span class="text-prompt-text">whoami</span>
-                </div>
-                <div class="terminal-line text-gray-200 ml-4 mb-8">
-                    <span class="text-white font-bold">&gt;</span> 
-                    <span><strong>Bruno</strong>, a <span class="text-cyan-300 font-bold">Software Engineer</span> focused on system resilience and high <span class="text-amber-300 font-bold">performance</span>. My passion is dissecting complex architectures and architecting clean, <span class="text-amber-300 font-bold">scalable</span> solutions using <span class="text-fuchsia-300 font-bold">Laravel</span>, <span class="text-fuchsia-300 font-bold">TypeScript</span>, and modern concurrency techniques. I don't just write code; I am a dedicated <span class="text-cyan-300 font-bold">Problem Solver</span> who resolves bottlenecks and eliminates single points of failure.</span>
-                </div>
-
-                <div class="terminal-line text-white mb-4">
-                    <span class="text-green-400 font-bold">brunots.dev:<span class="text-green-600">~$</span></span> 
-                    <span class="text-prompt-text">cat development_focus.txt</span>
-                </div>
-                <ul class="list-none ml-4 space-y-2 mb-8">
-                    <?php foreach ($developmentFocus as $focus): ?>
-                    <li class="terminal-line text-gray-200">
-                        <span class="text-green-500 mr-2">*</span> 
-                        <span class="text-white font-semibold"><?= $focus['title'] ?></span> <?= $focus['description'] ?>
-                    </li>
-                    <?php endforeach; ?>
-                </ul>
-
-                <div class="terminal-line text-white mb-4">
-                    <span class="text-green-400 font-bold">brunots.dev:<span class="text-green-600">~$</span></span> 
-                    <span class="text-prompt-text">ls -F ./solutions/</span>
-                </div>
-                <div class="ml-4 space-y-4 mb-8">
-                    <?php foreach ($solutions as $solution): ?>
-                    <div class="terminal-line text-gray-200 border-l-2 border-green-500 pl-3 py-1 hover:bg-white/10 transition duration-150 rounded-sm">
-                        <span class="text-blue-400">[<?= $solution['id'] ?>]</span> <a href="<?= $solution['url'] ?>" target="_blank" class="font-bold text-white hover:underline"><?= $solution['title'] ?></a>
-                        <p class="ml-6 text-xs mt-1 italic">
-                            <span class="text-green-400 font-bold">// <?= $solution['fix_type'] ?? 'FIX' ?>:</span> <?= $solution['description'] ?>
-                        </p>
+                <div class="terminal-section">
+                    <div class="terminal-line terminal-command text-white mb-4">
+                        <div class="line">
+                            <span class="text-green-400 font-bold">brunots.dev:<span class="text-green-600">~$</span></span> 
+                            <span class="text-prompt-text">whoami</span>
+                        </div>
                     </div>
-                    <?php endforeach; ?>
+                    <div class="terminal-line text-gray-200 ml-4 mb-8">
+                        <span class="text-white font-bold">&gt;</span> 
+                        <span><strong>Bruno</strong>, a <span class="text-cyan-300 font-bold">Software Engineer</span> focused on system resilience and high <span class="text-amber-300 font-bold">performance</span>. My passion is dissecting complex architectures and architecting clean, <span class="text-amber-300 font-bold">scalable</span> solutions using <span class="text-fuchsia-300 font-bold">Laravel</span>, <span class="text-fuchsia-300 font-bold">TypeScript</span>, and modern concurrency techniques. I don't just write code; I am a dedicated <span class="text-cyan-300 font-bold">Problem Solver</span> who resolves bottlenecks and eliminates single points of failure.</span>
+                    </div>
                 </div>
 
-                <div class="terminal-line text-white mb-4">
-                    <span class="text-green-400 font-bold">brunots.dev:<span class="text-green-600">~$</span></span> 
-                    <span class="text-prompt-text">connect</span>
-                </div>
-                <div class="ml-4 terminal-line text-gray-200 flex flex-wrap gap-x-6 gap-y-2">
-                    <?php foreach ($contactLinks as $index => $contact): ?>
-                    <span class="flex items-center whitespace-nowrap">
-                        <svg class="w-5 h-5 text-blue-400 mr-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <?= $contact['icon'] ?>
-                        </svg>
-                        <span class="text-white font-bold"><?= $contact['label'] ?></span> 
-                        <a href="<?= $contact['url'] ?>" <?= strpos($contact['url'], 'mailto:') === false ? 'target="_blank"' : '' ?> class="text-blue-400 hover:text-blue-300 transition ml-1"><?= $contact['text'] ?></a>
-                    </span>
-                    <?php if ($index < count($contactLinks) - 1): ?>
-                    <span class="text-gray-500 hidden sm:inline">|</span>
-                    <?php endif; ?>
-                    <?php endforeach; ?>
+                <div class="terminal-section">
+                    <div class="terminal-line terminal-command text-white mb-4">
+                        <div class="line">
+                            <span class="text-green-400 font-bold">brunots.dev:<span class="text-green-600">~$</span></span> 
+                            <span class="text-prompt-text">cat development_focus.txt</span>
+                        </div>
+                    </div>
+                    <ul class="list-none ml-4 space-y-2 mb-8">
+                        <?php foreach ($developmentFocus as $focus): ?>
+                        <li class="terminal-line text-gray-200">
+                            <span class="text-green-500 mr-2">*</span> 
+                            <span class="text-white font-semibold"><?= $focus['title'] ?></span> <?= $focus['description'] ?>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
                 </div>
 
-                <div class="terminal-line text-white mt-8 pb-6">
-                    <span class="text-green-400 font-bold">brunots.dev:<span class="text-green-600">~$</span></span> 
-                    <span id="dynamic-prompt" class="text-prompt-text"></span>
+                <div class="terminal-section">
+                    <div class="terminal-line terminal-command text-white mb-4">
+                        <div class="line">
+                            <span class="text-green-400 font-bold">brunots.dev:<span class="text-green-600">~$</span></span> 
+                            <span class="text-prompt-text">ls -F ./solutions/</span>
+                        </div>
+                    </div>
+                    <div class="ml-4 space-y-4 mb-8">
+                        <?php foreach ($solutions as $solution): ?>
+                        <div class="terminal-line text-gray-200 border-l-2 border-green-500 pl-3 py-1 hover:bg-white/10 transition duration-150 rounded-sm">
+                            <span class="text-blue-400">[<?= $solution['id'] ?>]</span> <a href="<?= $solution['url'] ?>" target="_blank" class="font-bold text-white hover:underline"><?= $solution['title'] ?></a>
+                            <p class="ml-6 text-xs mt-1 italic">
+                                <span class="text-green-400 font-bold">// <?= $solution['fix_type'] ?? 'FIX' ?>:</span> <?= $solution['description'] ?>
+                            </p>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <div class="terminal-section">
+                    <div class="terminal-line terminal-command text-white mb-4">
+                        <div class="line">
+                            <span class="text-green-400 font-bold">brunots.dev:<span class="text-green-600">~$</span></span> 
+                            <span class="text-prompt-text">connect</span>
+                        </div>
+                    </div>
+                    <div class="ml-4 terminal-line text-gray-200 flex flex-wrap gap-x-6 gap-y-2 mb-8">
+                        <?php foreach ($contactLinks as $index => $contact): ?>
+                        <span class="flex items-center whitespace-nowrap">
+                            <svg class="w-5 h-5 text-blue-400 mr-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <?= $contact['icon'] ?>
+                            </svg>
+                            <span class="text-white font-bold"><?= $contact['label'] ?></span> 
+                            <a href="<?= $contact['url'] ?>" <?= strpos($contact['url'], 'mailto:') === false ? 'target="_blank"' : '' ?> class="text-blue-400 hover:text-blue-300 transition ml-1"><?= $contact['text'] ?></a>
+                        </span>
+                        <?php if ($index < count($contactLinks) - 1): ?>
+                        <span class="text-gray-500 hidden sm:inline">|</span>
+                        <?php endif; ?>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <div class="terminal-line text-white mt-8 pb-6 min-h-[6.2rem] sm:min-h-0 flex items-start">
+                    <span class="text-green-400 font-bold flex-shrink-0">brunots.dev:<span class="text-green-600">~$</span></span> 
+                    <span id="dynamic-prompt" class="text-prompt-text ml-2 line-clamp-3 overflow-hidden"></span>
                 </div>
             </div>
         </div>
