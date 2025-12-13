@@ -1,4 +1,7 @@
-# 💻 BrunoTS.dev
+<h1 style="text-align:center" align="center">
+    <img src="favicon.webp" width="64px" height="64px">
+    <p>BrunoTS.dev</p>
+</h1>
 
 > **Software Engineer | Problem Solver | System Architect**
 
