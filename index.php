@@ -69,11 +69,11 @@ $contactLinks = [
 
 $footerLinks = [
     [
-        'text' => 'Website hosted on brunots.dev',
-        'url' => 'http://brunots.dev'
+        'text' => 'brunots.dev',
+        'url' => 'http://brunots.dev',
     ],
     [
-        'text' => 'Source code',
+        'text' => '// this.sourceCode',
         'url' => 'https://github.com/b7s/my-site'
     ]
 ];
@@ -226,6 +226,138 @@ $footerLinks = [
             padding-right: 24px;
         }
         
+        /* Contact Modal Styles */
+        #contactModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #contactModal.show {
+            display: flex;
+        }
+        
+        .modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        
+        .modal-content {
+            position: relative;
+            background: rgba(30, 30, 35, 0.12);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+        
+        .modal-close:hover {
+            color: #e2e8f0;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: all 0.2s;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .contact-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateX(4px);
+        }
+        
+        .contact-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .contact-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            color: #60a5fa;
+            flex-shrink: 0;
+        }
+        
+        .contact-info {
+            flex-grow: 1;
+        }
+        
+        .contact-label {
+            font-size: 11px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+        
+        .contact-link {
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        
+        .contact-link:hover {
+            color: #60a5fa;
+        }
+        
         /* Responsiveness adjustment for small screens (Mobile) */
         @media (max-width: 640px) {
             body {
@@ -243,6 +375,11 @@ $footerLinks = [
                 height: 100dvh !important;
                 max-height: 100dvh !important;
             }
+            
+            .modal-content {
+                max-width: 90%;
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -259,6 +396,12 @@ $footerLinks = [
             <div class="flex-grow text-center text-sm font-semibold text-slate-400 select-none cursor-default">
                 brunots.dev
             </div>
+            <button id="contactBtn" class="text-slate-400 hover:text-slate-200 transition-colors duration-200" title="Contact">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                </svg>
+            </button>
         </div>
 
         <div class="terminal-content-area">
@@ -358,11 +501,7 @@ $footerLinks = [
             <div class="flex justify-center space-x-4">
                 <?php foreach ($footerLinks as $index => $link): ?>
                 <p class="whitespace-nowrap">
-                    <?php if (strpos($link['text'], 'hosted') !== false): ?>
-                        <a href="<?= $link['url'] ?>" class="hover:underline">brunots.dev</a>
-                    <?php else: ?>
-                        <a href="<?= $link['url'] ?>" target="_blank" class="hover:underline"><?= $link['text'] ?></a>
-                    <?php endif; ?>
+                    <a href="<?= $link['url'] ?>" target="_blank" class="hover:text-slate-200"><?= $link['text'] ?></a>
                 </p>
                 <?php if ($index < count($footerLinks) - 1): ?>
                 <span class="text-slate-500">|</span>
@@ -372,18 +511,90 @@ $footerLinks = [
         </div>
     </div>
 
+    <!-- Contact Modal -->
+    <div id="contactModal">
+        <div class="modal-backdrop" id="modalBackdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-semibold text-slate-200">Contact</h3>
+                <button class="modal-close" id="closeModal">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="contact-list">
+                <?php foreach ($contactLinks as $contact): ?>
+                <?php if (isset($contact['protected']) && $contact['protected']): ?>
+                <a href="#" data-protected="<?= $contact['text'] ?>" data-type="mailto" class="contact-item protected-link-modal">
+                    <svg class="contact-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <?= $contact['icon'] ?>
+                    </svg>
+                    <div class="contact-info">
+                        <div class="contact-label"><?= rtrim($contact['label'], ':') ?></div>
+                        <span class="contact-link"></span>
+                    </div>
+                </a>
+                <?php else: ?>
+                <a href="<?= $contact['url'] ?>" target="_blank" class="contact-item">
+                    <svg class="contact-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <?= $contact['icon'] ?>
+                    </svg>
+                    <div class="contact-info">
+                        <div class="contact-label"><?= rtrim($contact['label'], ':') ?></div>
+                        <span class="contact-link"><?= $contact['text'] ?></span>
+                    </div>
+                </a>
+                <?php endif; ?>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Protected content decoder - decode base64 and setup links
-            document.querySelectorAll('.protected-link').forEach(link => {
+            document.querySelectorAll('.protected-link, .protected-link-modal').forEach(link => {
                 setTimeout(function() {
                     const encodedData = link.getAttribute('data-protected');
                     const linkType = link.getAttribute('data-type');
                     const decodedData = atob(encodedData);
                     
-                    link.textContent = decodedData;
+                    // For modal items, update the span inside
+                    const textElement = link.classList.contains('protected-link-modal') 
+                        ? link.querySelector('.contact-link')
+                        : link;
+                    
+                    if (textElement) {
+                        textElement.textContent = decodedData;
+                    }
                     link.href = linkType ? linkType + ':' + decodedData : decodedData;
                 }, <?= mt_rand(101, 256) ?>)
+            });
+
+            // Contact Modal functionality
+            const contactBtn = document.getElementById('contactBtn');
+            const contactModal = document.getElementById('contactModal');
+            const closeModal = document.getElementById('closeModal');
+            const modalBackdrop = document.getElementById('modalBackdrop');
+
+            contactBtn.addEventListener('click', () => {
+                contactModal.classList.add('show');
+            });
+
+            closeModal.addEventListener('click', () => {
+                contactModal.classList.remove('show');
+            });
+
+            modalBackdrop.addEventListener('click', () => {
+                contactModal.classList.remove('show');
+            });
+
+            // Close modal with ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && contactModal.classList.contains('show')) {
+                    contactModal.classList.remove('show');
+                }
             });
 
             const dynamicPrompt = document.getElementById('dynamic-prompt');
