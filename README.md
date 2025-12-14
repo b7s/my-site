@@ -52,7 +52,7 @@ This project is **open source** and available for anyone to use as inspiration o
 
 ## 📫 Contact
 
-- **Email:** [bruno@brunots.dev](mailto:me@brunots.dev)
+- **Email:** [me@brunots.dev](mailto:me@brunots.dev)
 - **GitHub:** [@b7s](https://github.com/b7s)
 - **LinkedIn:** [/in/brunotenorios](https://www.linkedin.com/in/brunotenorios/)
 
