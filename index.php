@@ -1,6 +1,6 @@
 <?php
 // Arrays de dados para facilitar manutenção
-$prompt = '<span class="text-green-400 font-bold whitespace-nowrap">brunots.dev:<span class="text-green-600">~$</span></span>';
+$prompt = '<span class="text-green-400 font-bold whitespace-nowrap select-none">brunots.dev:<span class="text-green-600">~$</span></span>';
 
 $developmentFocus = [
     [
@@ -38,7 +38,7 @@ $solutions = [
     ],
     [
         'id' => '1+n',
-        'title' => 'More Corporate &amp; Public Solutions [see more &#10140;]',
+        'title' => 'More Corporate &amp; Public Solutions/ <span class="opacity-50">see more &#10140;</span>',
         'url' => 'https://github.com/b7s',
         'description' => '',
         'type' => ''
@@ -411,7 +411,7 @@ $footerLinks = [
                 <h1 class="sr-only">BrunoTS: Software Engineer & Problem Solver specializing in Laravel, TypeScript, and high-performance systems.</h1>
 
                 <div class="terminal-line text-white mb-6">
-                    <span class="text-green-400 font-bold">$</span> 
+                    <span class="text-green-400 font-bold">/&#10140;</span> 
                     <span class="text-slate-200">Welcome to <strong class="text-cyan-300">BrunoTS</strong>'s Problem-Solving Console.</span>
                 </div>
 
@@ -422,7 +422,7 @@ $footerLinks = [
                         </div>
                     </div>
                     <div class="terminal-line text-slate-200 ml-4 mb-8">
-                        <span class="text-white font-bold">&gt;</span> 
+                        <span class="text-green-400 font-bold">&gt;</span> 
                         <span><strong>Bruno</strong>, a <span class="text-cyan-300 font-bold">Software Engineer</span> focused on system resilience and high <span class="text-amber-300 font-bold">performance</span>. My passion is dissecting complex architectures and architecting clean, <span class="text-amber-300 font-bold">scalable</span> solutions using <span class="text-fuchsia-300 font-bold">Laravel</span>, <span class="text-fuchsia-300 font-bold">TypeScript</span>, and modern concurrency techniques. I don't just write code; I am a dedicated <span class="text-cyan-300 font-bold">Problem Solver</span> who resolves bottlenecks and eliminates single points of failure.</span>
                     </div>
                 </div>
@@ -430,7 +430,7 @@ $footerLinks = [
                 <div class="terminal-section">
                     <div class="terminal-line terminal-command text-white mb-4">
                         <div class="line">
-                            <?= $prompt ?> <span class="text-prompt-text">cat focus.txt</span>
+                            <?= $prompt ?> <span class="text-prompt-text">tail 3 focus.txt</span>
                         </div>
                     </div>
                     <ul class="list-none ml-4 space-y-2 mb-8">
@@ -446,7 +446,7 @@ $footerLinks = [
                 <div class="terminal-section">
                     <div class="terminal-line terminal-command text-white mb-4">
                         <div class="line">
-                            <?= $prompt ?> <span class="text-prompt-text">ls -F ./solutions/</span>
+                            <?= $prompt ?> <span class="text-prompt-text">ls -F solutions</span>
                         </div>
                     </div>
                     <div class="ml-4 space-y-3 mb-8">
