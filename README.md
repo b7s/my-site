@@ -1,5 +1,5 @@
 <h1 style="text-align:center" align="center">
-    <img src="favicon.webp" width="64px" height="64px">
+    <img src="favicon.webp" width="96px" height="96px">
     <p>BrunoTS.dev</p>
 </h1>
 
