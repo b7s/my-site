@@ -260,7 +260,7 @@ $footerLinks = [
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            border-radius: 2rem;
             padding: 24px;
             max-width: 400px;
             width: 90%;
