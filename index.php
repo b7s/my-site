@@ -430,22 +430,6 @@ $footerLinks = [
                 <div class="terminal-section">
                     <div class="terminal-line terminal-command text-white mb-4">
                         <div class="line">
-                            <?= $prompt ?> <span class="text-prompt-text">tail 3 focus.txt</span>
-                        </div>
-                    </div>
-                    <ul class="list-none ml-4 space-y-2 mb-8">
-                        <?php foreach ($developmentFocus as $focus): ?>
-                        <li class="terminal-line text-slate-200">
-                            <span class="text-green-500 mr-2">*</span> 
-                            <span class="text-white font-semibold"><?= $focus['title'] ?></span> <?= $focus['description'] ?>
-                        </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-
-                <div class="terminal-section">
-                    <div class="terminal-line terminal-command text-white mb-4">
-                        <div class="line">
                             <?= $prompt ?> <span class="text-prompt-text">ls -F solutions</span>
                         </div>
                     </div>
@@ -461,6 +445,22 @@ $footerLinks = [
                         </div>
                         <?php endforeach; ?>
                     </div>
+                </div>
+
+                <div class="terminal-section">
+                    <div class="terminal-line terminal-command text-white mb-4">
+                        <div class="line">
+                            <?= $prompt ?> <span class="text-prompt-text">tail 3 focus.txt</span>
+                        </div>
+                    </div>
+                    <ul class="list-none ml-4 space-y-2 mb-8">
+                        <?php foreach ($developmentFocus as $focus): ?>
+                        <li class="terminal-line text-slate-200">
+                            <span class="text-green-500 mr-2">*</span> 
+                            <span class="text-white font-semibold"><?= $focus['title'] ?></span> <?= $focus['description'] ?>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
                 </div>
 
                 <div class="terminal-section">
