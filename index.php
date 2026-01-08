@@ -20,9 +20,9 @@ $developmentFocus = [
 $solutions = [
     [
         'id' => '01',
-        'title' => 'Purrai - AI Workflow Agent/',
-        'url' => 'https://github.com/b7s/purrai',
-        'description' => 'Built an AI chat/scheduling agent to manage complex task flows, automating conversational inputs and reducing manual coordination overhead.'
+        'title' => 'FluentVox - text-to-speech and voice cloning/',
+        'url' => 'https://github.com/b7s/fluentvox',
+        'description' => 'Unleash state-of-the-art text-to-speech and voice cloning in your PHP applications with style.'
     ],
     [
         'id' => '02',
@@ -47,7 +47,7 @@ $solutions = [
 
 $contactLinks = [
     [
-        'icon' => '<path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>',
+        'icon' => '<path fill-rule="evenodd" d="M2.94 6.412A2 2 0 012 8.108V19a2 2 0 002 2h16a2 2 0 002-2V8.108a2 2 0 00-.94-1.696l-8-5a2 2 0 00-2.12 0l-8 5zM4 8.108l8-5 8 5V19H4V8.108z"/><path d="M4.293 8.293a1 1 0 011.414 0L12 14.586l6.293-6.293a1 1 0 111.414 1.414l-7 7a1 1 0 01-1.414 0l-7-7a1 1 0 010-1.414z"/>',
         'label' => 'Email:',
         'url' => '#',
         'text' => base64_encode('me@brunots.dev'),
@@ -64,6 +64,12 @@ $contactLinks = [
         'label' => 'LinkedIn:',
         'url' => 'https://www.linkedin.com/in/brunotenorios/',
         'text' => '/in/brunotenorios'
+    ],
+    [
+        'icon' => '<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>',
+        'label' => 'X:',
+        'url' => 'https://www.x.com/me_bruno_dev',
+        'text' => '@me_bruno_dev'
     ]
 ];
 
@@ -421,9 +427,26 @@ $footerLinks = [
                             <?= $prompt ?> <span class="text-prompt-text">whoami</span>
                         </div>
                     </div>
-                    <div class="terminal-line text-slate-200 ml-4 mb-8">
+                    <div class="terminal-line text-slate-200 ml-4 mb-4">
                         <span class="text-green-400 font-bold">&gt;</span> 
                         <span><strong>Bruno</strong>, a <span class="text-cyan-300 font-bold">Software Engineer</span> focused on system resilience and high <span class="text-amber-300 font-bold">performance</span>. My passion is dissecting complex architectures and architecting clean, <span class="text-amber-300 font-bold">scalable</span> solutions using <span class="text-fuchsia-300 font-bold">Laravel</span>, <span class="text-fuchsia-300 font-bold">TypeScript</span>, and modern concurrency techniques. I don't just write code; I am a dedicated <span class="text-cyan-300 font-bold">Problem Solver</span> who resolves bottlenecks and eliminates single points of failure.</span>
+                    </div>
+                    
+                    <!-- Laravel Certification Card -->
+                    <div class="ml-4 mb-8 inline-block">
+                        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+                            <div class="flex items-center gap-4">
+                                <img src="images/badge-laravel-senior.png" alt="Laravel Senior Developer Certification" class="w-24 h-24 object-contain">
+                                <div class="flex flex-col gap-2">
+                                    <span class="text-slate-200 text-sm font-semibold">Laravel Senior Developer</span>
+                                    <a href="https://verifier.certificationforlaravel.org/1c0b7ea2-89ac-4351-a58b-c399556e9839" 
+                                       target="_blank" 
+                                       class="inline-flex items-center justify-center px-4 py-1.5 bg-green-600/20 hover:bg-green-600/30 border border-green-500/50 text-green-400 text-sm font-medium rounded-lg transition duration-200">
+                                        Verify
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -489,15 +512,17 @@ $footerLinks = [
                     </div>
                 </div>
 
-                <div class="terminal-line terminal-command text-white mt-8 pb-6 min-h-[6.2rem] sm:min-h-0 flex items-start">
-                    <div class="line items-center">
-                        <?= $prompt ?> <span id="dynamic-prompt" class="text-prompt-text line-clamp-3 overflow-hidden"></span>
-                    </div>
+            </div>
+
+            <!-- Fixed command line with animation above footer -->
+            <div class="terminal-line terminal-command text-white px-0 py-4 min-h-[6.2rem] sm:min-h-0 flex items-start flex-shrink-0">
+                <div class="line items-center">
+                    <?= $prompt ?> <span id="dynamic-prompt" class="text-prompt-text line-clamp-3 overflow-hidden"></span>
                 </div>
             </div>
         </div>
 
-        <div class="flex-shrink-0 py-3 text-center text-xs text-slate-400 border-t border-gray-800/50 px-6">
+        <div class="flex-shrink-0 py-3 text-center text-xs text-slate-400 border-t border-gray-800/50 select-none px-6">
             <div class="flex justify-center space-x-4">
                 <?php foreach ($footerLinks as $index => $link): ?>
                 <p class="whitespace-nowrap">
