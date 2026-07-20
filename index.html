@@ -13,7 +13,7 @@
   <meta name="theme-color" content="#008080" />
   <link rel="canonical" href="https://brunots.dev/" />
 
-  <link rel="icon" type="image/webp" href="images/favicon.webp" />
+  <link rel="icon" type="image/webp" href="assets/images/favicon.webp" />
   <link rel="alternate" hreflang="en" href="https://brunots.dev/" />
 
   <!-- Open Graph -->
@@ -23,13 +23,13 @@
   <meta property="og:title" content="Bruno TS — Laravel Developer & Software Engineer" />
   <meta property="og:description" content="Software Engineer specialized in Laravel and PHP. GitHub projects, the Laravel Senior certificate and the site brunots.dev, in a Windows 98 style portfolio." />
   <meta property="og:url" content="https://brunots.dev/" />
-  <meta property="og:image" content="https://brunots.dev/images/badge-laravel-senior.png" />
+  <meta property="og:image" content="https://brunots.dev/assets/images/badge-laravel-senior.png" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Bruno TS — Laravel Developer & Software Engineer" />
   <meta name="twitter:description" content="Software Engineer specialized in Laravel and PHP. Laravel Senior certificate and GitHub projects." />
-  <meta name="twitter:image" content="https://brunots.dev/images/badge-laravel-senior.png" />
+  <meta name="twitter:image" content="https://brunots.dev/assets/images/badge-laravel-senior.png" />
 
   <script type="application/ld+json">
   {
@@ -105,6 +105,16 @@
       background: var(--c-desktop);
       overflow: hidden;
       -webkit-font-smoothing: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+    /* Allow text selection only inside actual readable content windows
+       (e.g. About Me properties, Projects list, credits). */
+    .allow-select, .allow-select * {
+      user-select: text !important;
+      -webkit-user-select: text !important;
     }
 
     /* Win98 bevels */
@@ -127,7 +137,7 @@
 
     .win98-btn {
       min-width: 18px;
-      padding: 1px 6px;
+      padding: 6px;
       font-size: 11px;
       line-height: 1;
       cursor: pointer;
@@ -140,7 +150,23 @@
       border-color: var(--c-face-darker) var(--c-face-light) var(--c-face-light) var(--c-face-darker);
       padding: 2px 5px 0 7px;
     }
-
+    .win98-btn:disabled,
+    .win98-btn[disabled],
+    .win98-btn.disabled {
+      cursor: default !important;
+      color: var(--c-face-dark) !important;
+      text-shadow: 1px 1px 0 var(--c-face-light) !important;
+      border-color: var(--c-face-dark) var(--c-face-light) var(--c-face-light) var(--c-face-dark) !important;
+      background: var(--c-face) !important;
+      pointer-events: none;
+    }
+    .win98-btn:disabled:active,
+    .win98-btn[disabled]:active,
+    .win98-btn.disabled:active {
+      padding: 6px !important;
+      border-color: var(--c-face-dark) var(--c-face-light) var(--c-face-light) var(--c-face-dark) !important;
+    }
+    
     .title-bar {
       background: linear-gradient(90deg, var(--c-title), var(--c-title-grad));
       color: #fff;
@@ -159,6 +185,10 @@
     .title-bar:active { cursor: grabbing; }
     .title-bar.inactive { background: linear-gradient(90deg, #808080, #b5b5b5); }
 
+    .title-bar .win98-btn {
+      padding: 1px 6px;
+    }
+
     .window {
       position: absolute;
       background: var(--c-face);
@@ -166,6 +196,13 @@
       display: flex;
       flex-direction: column;
     }
+    /* While the user drags the title bar, free the iframe from pointer events
+       so its contents (e.g. Minefield board) don't cause expensive repaints. */
+    .window.dragging iframe { pointer-events: none; }
+    .window.dragging { will-change: transform; }
+    /* Promote heavy iframes (boards / players) to their own GPU layer
+       so the browser can cache them as a bitmap during window drag. */
+    iframe { background: transparent; }
 
     .taskbar-btn.active {
       border-color: var(--c-face-darker) var(--c-face-light) var(--c-face-light) var(--c-face-darker);
@@ -181,7 +218,16 @@
       cursor: pointer;
       padding: 4px;
       user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
+    .desktop-icon > div {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+    .desktop-icon svg, .desktop-icon img { display: block; margin: 0 auto; }
     .desktop-icon:hover { background: rgba(0,0,128,0.4); outline: 1px dotted #fff; }
     .desktop-icon:focus { background: rgba(0,0,128,0.5); outline: 1px dotted #fff; }
 
@@ -220,6 +266,30 @@
     .start-menu .win98-btn:active {
       padding: 7px 13px 5px 15px;
     }
+
+    /* Programs submenu (Win98-style fly-out) */
+    .start-menu-programs {
+      position: relative;
+    }
+    .start-menu-submenu {
+      position: absolute;
+      left: 100%;
+      top: -4px;
+      min-width: 170px;
+      background: #c0c0c0;
+      padding: 4px;
+      display: none;
+      z-index: 10001;
+      margin-left: 2px;
+    }
+    .start-menu-submenu.open { display: block; }
+    .start-menu-submenu .win98-btn { padding: 6px 14px; }
+    .start-menu-submenu .win98-btn:active { padding: 7px 13px 5px 15px; }
+    .start-menu-programs[aria-expanded="true"] {
+      background: #000080;
+      color: #fff;
+    }
+    .start-menu-programs[aria-expanded="true"] span { color: #fff; }
 
     .status-bar {
       border-top: 1px solid var(--c-face-dark);
@@ -272,7 +342,7 @@
   </header>
 
   <!-- ============ DESKTOP ============ -->
-  <main id="desktop" class="absolute inset-0 overflow-hidden" aria-label="Área de trabalho">
+  <main id="desktop" class="absolute inset-0 overflow-hidden select-none" aria-label="Área de trabalho">
 
     <!-- Desktop icons -->
     <div class="absolute top-2 left-2 flex flex-col gap-2">
@@ -296,6 +366,14 @@
         <div style="font-size:32px">✉️</div>
         <div>Contact me</div>
       </a>
+      <div class="desktop-icon" tabindex="0" data-open="win-winamp" role="button" aria-label="Open Music Play">
+        <div><svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#ff7a00" d="M21 4v15.07A5.5 5.5 0 1 0 23 23V10h5V4z"/></svg></div>
+        <div>Music Play</div>
+      </div>
+      <div class="desktop-icon" tabindex="0" data-open="win-minefield" role="button" aria-label="Open Minefield">
+        <div><svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" shape-rendering="crispEdges"><rect x="3" y="3" width="10" height="10" fill="#c0c0c0" stroke="#fff" stroke-width="2" stroke-linejoin="bevel"/><rect x="3" y="13" width="10" height="10" fill="#c0c0c0" stroke="#fff" stroke-width="2" stroke-linejoin="bevel"/><rect x="13" y="3" width="10" height="10" fill="#c0c0c0" stroke="#fff" stroke-width="2" stroke-linejoin="bevel"/><circle cx="22" cy="18" r="6" fill="#000"/><path d="M22 6v6m-3-3h6M11 28h12" stroke="#000" stroke-width="2" stroke-linecap="square" fill="none"/></svg></div>
+        <div>Minefield</div>
+      </div>
     </div>
 
     <!-- ============ WINDOW: About ============ -->
@@ -345,7 +423,7 @@
     </section>
 
     <!-- ============ WINDOW: Laravel Certificate ============ -->
-    <section class="window bevel-out" id="win-cert" style="left:64%; top:18%; width:360px; height:280px; z-index:11;" aria-label="Laravel Senior Certificate">
+    <section class="window bevel-out" id="win-cert" style="left:64%; top:18%; width:360px; height:285px; z-index:11;" aria-label="Laravel Senior Certificate">
       <div class="title-bar">
         <span style="margin-right:auto">🏅 Laravel Senior Certificate</span>
         <button class="win98-btn" data-act="min" aria-label="Minimize">_</button>
@@ -354,7 +432,7 @@
       </div>
       <div class="bevel-sunken" style="flex:1; margin:3px; overflow:auto; background:#fff; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; font-size:12px;">
         <a href="https://verifier.certificationforlaravel.org/1c0b7ea2-89ac-4351-a58b-c399556e9839" target="_blank" rel="noopener" title="Verify Laravel Senior certificate">
-          <img src="images/badge-laravel-senior.png" alt="Laravel Senior Certificate badge for Bruno (brunots)" width="140" class="bevel-in" style="background:#fff; margin-bottom:8px;" />
+          <img src="assets/images/badge-laravel-senior.png" alt="Laravel Senior Certificate badge for Bruno (brunots)" width="140" class="bevel-in" style="background:#fff; margin-bottom:8px;" />
         </a>
         <p style="margin:4px 0;"><strong>Laravel Senior Certificate</strong></p>
         <p style="margin:4px 0;">Issued to Bruno (brunots)</p>
@@ -362,14 +440,91 @@
       </div>
     </section>
 
+    <!-- ============ WINDOW: Music Play (iframe loaded lazily on first open) ============ -->
+    <section class="window bevel-out" id="win-winamp" style="left:12%; top:40%; width:295px; height:380px; z-index:10; display:none;" aria-label="Music Play player">
+      <div class="title-bar">
+        <span style="margin-right:auto; display:flex; align-items:center; gap:5px;"><svg width="14" height="14" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex:0 0 auto;"><path fill="#ff7a00" d="M21 4v15.07A5.5 5.5 0 1 0 23 23V10h5V4z"/></svg> Music Play</span>
+        <button class="win98-btn" data-act="pl" aria-label="Toggle playlist">≡</button>
+        <button class="win98-btn" data-act="min" aria-label="Minimize">_</button>
+        <button class="win98-btn" disabled aria-label="Maximize">▢</button>
+        <button class="win98-btn" data-act="close" aria-label="Close">✕</button>
+      </div>
+      <div class="bevel-sunken" style="flex:1; margin:3px; overflow:hidden; background:#2a2a2a; padding:0;">
+        <iframe id="winamp-iframe"
+                src="about:blank"
+                width="100%" height="100%"
+                style="border:0; display:block; background:#2a2a2a;"
+                title="Music Play"
+                loading="lazy"
+                allow="autoplay"></iframe>
+      </div>
+    </section>
+
+    <!-- ============ WINDOW: Minefield (iframe loaded lazily on first open) ============ -->
+    <section class="window bevel-out" id="win-minefield" style="left:30%; top:18%; width:280px; height:360px; z-index:9; display:none;" aria-label="Minefield game">
+      <div class="title-bar">
+        <span style="margin-right:auto; display:flex; align-items:center; gap:5px;">
+          <svg width="14" height="14" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex:0 0 auto;" shape-rendering="crispEdges">
+            <rect x="2" y="2" width="9" height="9" fill="#c0c0c0" stroke="#fff" stroke-width="1.5" stroke-linejoin="bevel"/>
+            <rect x="2" y="11" width="9" height="9" fill="#c0c0c0" stroke="#fff" stroke-width="1.5" stroke-linejoin="bevel"/>
+            <rect x="11" y="2" width="9" height="9" fill="#c0c0c0" stroke="#fff" stroke-width="1.5" stroke-linejoin="bevel"/>
+            <circle cx="21" cy="15" r="5" fill="#000"/>
+            <path d="M21 5v5m-2.5-2.5h5" stroke="#000" stroke-width="1.5" stroke-linecap="square" fill="none"/>
+          </svg>
+          Minefield
+        </span>
+        <button class="win98-btn" data-act="min" aria-label="Minimize">_</button>
+        <button class="win98-btn" disabled aria-label="Maximize">▢</button>
+        <button class="win98-btn" data-act="close" aria-label="Close">✕</button>
+      </div>
+      <div class="bevel-sunken" style="flex:1; margin:3px; overflow:auto; background:#c0c0c0; padding:0; display:flex; align-items:flex-start; justify-content:flex-start;">
+        <iframe id="minefield-iframe"
+                src="about:blank"
+                width="100%"
+                height="300"
+                style="border:0; display:block; background:#c0c0c0; flex:0 0 auto;"
+                title="Minefield"
+                loading="lazy"></iframe>
+      </div>
+    </section>
+
     <!-- ============ START MENU ============ -->
     <nav class="start-menu bevel-out" id="startMenu" aria-label="Start menu">
       <div class="start-menu-title">BrunoTS</div>
-      <div class="p-1">
+      <div class="p-1" style="position:relative;">
         <a class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px; text-decoration:none; color:#000;" href="https://brunots.dev/" target="_blank" rel="noopener">🌐 brunots.dev</a>
         <button class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px;" data-open="win-projects">📁 My Projects</button>
         <button class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px;" data-open="win-about">👤 About Me</button>
         <button class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px;" data-open="win-cert">🏅 Laravel Cert</button>
+
+        <!-- Programs entry: reveals submenu on hover/click -->
+        <button class="win98-btn start-menu-programs" id="programsBtn" type="button" aria-haspopup="true" aria-expanded="false">
+          <span style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+            <span>📂 Programs</span>
+            <span aria-hidden="true" style="margin-left:14px;">▶</span>
+          </span>
+        </button>
+        <div class="start-menu-submenu bevel-out" id="programsSubmenu" role="menu">
+          <button class="win98-btn" role="menuitem" data-open="win-winamp" style="display:block; width:100%; text-align:left; margin-bottom:2px; color:#000;" >
+            <span style="display:inline-flex; align-items:center; gap:6px;">
+              <svg width="12" height="12" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="#ff7a00" d="M21 4v15.07A5.5 5.5 0 1 0 23 23V10h5V4z"/></svg>
+              Music Play
+            </span>
+          </button>
+          <button class="win98-btn" role="menuitem" data-open="win-minefield" style="display:block; width:100%; text-align:left; margin-bottom:2px; color:#000;">
+            <span style="display:inline-flex; align-items:center; gap:6px;">
+              <svg width="12" height="12" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" shape-rendering="crispEdges">
+                <rect x="2" y="2" width="9" height="9" fill="#c0c0c0" stroke="#000" stroke-width="1.2" stroke-linejoin="bevel"/>
+                <rect x="2" y="11" width="9" height="9" fill="#c0c0c0" stroke="#000" stroke-width="1.2" stroke-linejoin="bevel"/>
+                <rect x="11" y="2" width="9" height="9" fill="#c0c0c0" stroke="#000" stroke-width="1.2" stroke-linejoin="bevel"/>
+                <circle cx="21" cy="15" r="5" fill="#000"/>
+                <path d="M21 5v5m-2.5-2.5h5" stroke="#000" stroke-width="1.2" fill="none"/>
+              </svg>
+              Minefield
+            </span>
+          </button>
+        </div>
+
         <hr class="bevel-in" style="border:0; height:2px; margin:4px 0;">
         <a class="win98-btn" style="display:block; width:100%; text-align:left; text-decoration:none; color:#000;" href="https://github.com/brunots" target="_blank" rel="noopener">💻 GitHub</a>
         <a class="win98-btn" style="display:block; width:100%; text-align:left; text-decoration:none; color:#000;" href="https://brunots.dev/" target="_blank" rel="noopener">🔗 brunots.dev</a>
@@ -433,40 +588,115 @@
     }
 
     function makeTaskButton(win) {
-      const title = win.querySelector(".title-bar span").textContent.trim();
+      const titleEl = win.querySelector(".title-bar span");
+      const titleRaw = titleEl ? titleEl.textContent.trim() : win.id;
+      const titleIconSvg = titleEl?.querySelector("svg");
+
       const btn = document.createElement("button");
       btn.className = "win98-btn taskbar-btn active";
       btn.style.height = "24px";
-      btn.style.maxWidth = "160px";
+      btn.style.maxWidth = "180px";
       btn.style.minWidth = "0";
       btn.style.overflow = "hidden";
       btn.style.whiteSpace = "nowrap";
       btn.style.textOverflow = "ellipsis";
       btn.style.flexShrink = "1";
-      btn.textContent = title;
+      btn.style.display = "flex";
+      btn.style.alignItems = "center";
+      btn.style.gap = "4px";
+      btn.style.padding = "0 6px";
+
+      // Resolve the icon to show in three steps:
+      //  (1) Inline SVG in the window's title bar (custom icons for Music Play / Minefield)
+      //  (2) Match a desktop icon (.desktop-icon[data-open=…] or by aria-label) and clone its SVG
+      //  (3) Use the leading emoji of the title as a text glyph
+      let iconSvg = titleIconSvg;
+      if (!iconSvg) {
+        const desktopIcon = document.querySelector(`[data-open="${win.id}"] svg`)
+                         ?? document.querySelector(`.desktop-icon[aria-label*="${win.id.replace(/^win-/, "")}" i] svg`);
+        if (desktopIcon) iconSvg = desktopIcon;
+      }
+      if (iconSvg) {
+        const ico = iconSvg.cloneNode(true);
+        ico.setAttribute("width", "14");
+        ico.setAttribute("height", "14");
+        ico.style.flex = "0 0 auto";
+        ico.querySelectorAll("[fill]").forEach(el => {
+          // keep only synthetic-orange (#ff7a00) for the Music Play note
+          if (el.getAttribute("fill") === "#ff7a00") return;
+          el.setAttribute("fill", "#000");
+        });
+        ico.querySelectorAll("[stroke]").forEach(el => {
+          if (el.getAttribute("stroke") === "#ff7a00") return;
+          el.setAttribute("stroke", "#000");
+        });
+        btn.appendChild(ico);
+      } else {
+        // Emoji fallback: pick the leading emoji/extended-pictographic char
+        const m = titleRaw.match(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}]/u);
+        if (m) {
+          const span = document.createElement("span");
+          span.textContent = m[0];
+          span.style.flex = "0 0 auto";
+          span.style.fontSize = "14px";
+          span.style.lineHeight = "1";
+          btn.appendChild(span);
+        }
+      }
+
+      // Text label — strip leading emoji + suffix like " — Properties"
+      let label = titleRaw.replace(/^[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F1E6}-\u{1F1FF}]/u, "").trim();
+      if (label.length > 24) label = label.slice(0, 22) + "…";
+      const labelSpan = document.createElement("span");
+      labelSpan.textContent = label;
+      labelSpan.style.overflow = "hidden";
+      labelSpan.style.textOverflow = "ellipsis";
+      btn.appendChild(labelSpan);
+      btn.setAttribute("aria-label", label);
+
       btn.addEventListener("click", () => {
         if (win.dataset.min === "1" || win.style.display === "none") {
           showWindow(win.id);
         } else {
+          // minimize the window: hide it but keep its taskbar entry
           win.style.display = "none";
           win.dataset.min = "1";
+          syncTaskButtons();
         }
-        syncTaskButtons();
       });
       taskButtons[win.id] = btn;
       taskbar.appendChild(btn);
     }
 
+    function recycleTaskButton(winId) {
+      // Remove the taskbar button for a hidden/closed window. Called on minimize or close.
+      // Re-opening the window will recreate the button via ensureTaskButton().
+      const btn = taskButtons[winId];
+      if (btn && btn.parentNode) btn.parentNode.removeChild(btn);
+      delete taskButtons[winId];
+    }
+
+    function ensureTaskButton(win) {
+      // Reattach the taskbar entry if missing (for re-opens).
+      if (taskButtons[win.id]) return taskButtons[win.id];
+      makeTaskButton(win);
+      return taskButtons[win.id];
+    }
+
     function syncTaskButtons() {
       windows.forEach(w => {
         const btn = taskButtons[w.id];
+        if (!btn) return; // recycled → nothing to highlight
         const hidden = w.style.display === "none" || w.dataset.min === "1";
         btn.classList.toggle("active", !hidden && w.style.zIndex == zTop);
       });
     }
 
     windows.forEach(win => {
-      makeTaskButton(win);
+      // Only create a taskbar entry for windows that start visible. Hidden windows
+      // (e.g. Music Play, Minefield) will get their buttons created on first open.
+      const startsVisible = getComputedStyle(win).display !== "none";
+      if (startsVisible) makeTaskButton(win);
 
       const bar = win.querySelector(".title-bar");
 
@@ -495,15 +725,33 @@
         const offY = e.clientY - rect.top;
         win.dataset.max = win.dataset.max || "0";
 
+        // Switch the window to GPU-composited motion.
+        // We promote to transform: translate3d while dragging to avoid
+        // inducing layout/paint cycles on the iframe (very expensive for big boards).
+        win.dataset.leftPre = rect.left;
+        win.dataset.topPre  = rect.top;
+        win.classList.add("dragging");
+
         function move(ev) {
           let x = ev.clientX - offX;
           let y = ev.clientY - offY;
           x = Math.max(0, Math.min(x, window.innerWidth - 40));
           y = Math.max(0, Math.min(y, window.innerHeight - 60));
-          win.style.left = x + "px";
-          win.style.top = y + "px";
+          // transform-only motion while the user is holding the title bar
+          win.style.left = "0px";
+          win.style.top  = "0px";
+          win.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         }
         function up() {
+          // Read final transform, then convert back to left/top for the next idle frame.
+          const transform = win.style.transform;
+          const m = /translate3d\(([-\d.]+)px,\s*([-\d.]+)px/.exec(transform);
+          if (m) {
+            win.style.left = m[1] + "px";
+            win.style.top  = m[2] + "px";
+          }
+          win.style.transform = "";
+          win.classList.remove("dragging");
           document.removeEventListener("mousemove", move);
           document.removeEventListener("mouseup", up);
         }
@@ -515,10 +763,50 @@
         b.addEventListener("click", (e) => {
           e.stopPropagation();
           const act = b.dataset.act;
-          if (act === "close") { win.style.display = "none"; win.dataset.min = "1"; }
-          else if (act === "min") { win.style.display = "none"; win.dataset.min = "1"; }
+          if (act === "close") {
+            if (win.id === "win-winamp") {
+              // Real teardown: ask the player to stop & release, then drop the iframe.
+              const ifr = document.getElementById("winamp-iframe");
+              if (ifr.dataset.loaded === "1" && ifr.contentWindow) {
+                ifr.contentWindow.postMessage({type:"winamp-shutdown"}, "*");
+                // Replace with a blank iframe shortly after so the browser releases resources
+                setTimeout(() => {
+                  ifr.src = "about:blank";
+                  ifr.dataset.loaded = "";
+                }, 60);
+              }
+              // reset playlist toggle visual state if it was on
+              const plBtn = win.querySelector('[data-act="pl"]');
+              if (plBtn) plBtn.classList.remove("on");
+            } else if (win.id === "win-minefield") {
+              // Stop the in-iframe timer and drop the iframe.
+              const ifr = document.getElementById("minefield-iframe");
+              if (ifr.dataset.loaded === "1" && ifr.contentWindow) {
+                ifr.contentWindow.postMessage({type:"minefield-shutdown"}, "*");
+                setTimeout(() => {
+                  ifr.src = "about:blank";
+                  ifr.dataset.loaded = "";
+                }, 60);
+              }
+            }
+            win.style.display = "none";
+            win.dataset.min = "1";
+            recycleTaskButton(win.id);
+          }
+          else if (act === "min") {
+            // Minimize: hide the window, but keep its taskbar entry so the user can restore.
+            win.style.display = "none";
+            win.dataset.min = "1";
+            syncTaskButtons();
+          }
           else if (act === "max") {
             toggleMax();
+          } else if (act === "pl" && win.id === "win-winamp") {
+            const ifr = document.getElementById("winamp-iframe");
+            if (ifr.dataset.loaded === "1" && ifr.contentWindow) {
+              ifr.contentWindow.postMessage({type:"winamp-toggle-playlist"}, "*");
+              b.classList.toggle("on");
+            }
           }
           syncTaskButtons();
         });
@@ -571,6 +859,24 @@
         win.style.left = Math.max(0, (window.innerWidth - w) / 2) + "px";
         win.style.top = Math.max(0, (window.innerHeight - h - 30) / 2) + "px";
       }
+      if (id === "win-winamp") {
+        // Lazy-load the Music Play iframe only on first open to avoid overloading the browser
+        const ifr = document.getElementById("winamp-iframe");
+        if (ifr && ifr.dataset.loaded !== "1") {
+          ifr.src = "winamp.html";
+          ifr.dataset.loaded = "1";
+        }
+      }
+      if (id === "win-minefield") {
+        // Lazy-load the Minefield iframe only on first open
+        const ifr = document.getElementById("minefield-iframe");
+        if (ifr && ifr.dataset.loaded !== "1") {
+          ifr.src = "minefield.html";
+          ifr.dataset.loaded = "1";
+        }
+      }
+      // Re-create the taskbar entry if this window was previously closed/minimized
+      ensureTaskButton(win);
       focusWindow(win);
       syncTaskButtons();
     }
@@ -588,12 +894,61 @@
 
     const startMenu = document.getElementById("startMenu");
     const startBtn = document.getElementById("startBtn");
+    const programsBtn = document.getElementById("programsBtn");
+    const programsSubmenu = document.getElementById("programsSubmenu");
+
     startBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       startMenu.classList.toggle("open");
+      if (!startMenu.classList.contains("open")) {
+        programsSubmenu.classList.remove("open");
+        programsBtn.setAttribute("aria-expanded", "false");
+      }
     });
-    document.addEventListener("click", () => startMenu.classList.remove("open"));
+    document.addEventListener("click", () => {
+      startMenu.classList.remove("open");
+      programsSubmenu.classList.remove("open");
+      programsBtn.setAttribute("aria-expanded", "false");
+    });
     startMenu.addEventListener("click", (e) => e.stopPropagation());
+
+    /* Programs submenu: open on hover/click, close on mouse leave (with a tiny grace period) */
+    let programsHideTimer = 0;
+    function showProgramsSubmenu() {
+      clearTimeout(programsHideTimer);
+      programsSubmenu.classList.add("open");
+      programsBtn.setAttribute("aria-expanded", "true");
+    }
+    function scheduleHideProgramsSubmenu() {
+      clearTimeout(programsHideTimer);
+      programsHideTimer = setTimeout(() => {
+        programsSubmenu.classList.remove("open");
+        programsBtn.setAttribute("aria-expanded", "false");
+      }, 180);
+    }
+    programsBtn.addEventListener("mouseenter", showProgramsSubmenu);
+    programsBtn.addEventListener("mouseleave", scheduleHideProgramsSubmenu);
+    programsSubmenu.addEventListener("mouseenter", () => clearTimeout(programsHideTimer));
+    programsSubmenu.addEventListener("mouseleave", scheduleHideProgramsSubmenu);
+    programsBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = programsSubmenu.classList.contains("open");
+      if (isOpen) {
+        programsSubmenu.classList.remove("open");
+        programsBtn.setAttribute("aria-expanded", "false");
+      } else {
+        showProgramsSubmenu();
+      }
+    });
+
+    /* Clicking a submenu app closes the start menu after open */
+    programsSubmenu.querySelectorAll("[data-open]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        programsSubmenu.classList.remove("open");
+        programsBtn.setAttribute("aria-expanded", "false");
+        startMenu.classList.remove("open");
+      });
+    });
 
     /* ===================== CLOCK ===================== */
     function tick() {

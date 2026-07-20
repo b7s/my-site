@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Minefield</title>
+<style>
+  /* ===== Minefield (Win98-styled) — pure CSS ===== */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #c0c0c0;
+    font-family: "Pixelated MS Sans Serif", "MS Sans Serif", Tahoma, sans-serif;
+    -webkit-font-smoothing: none;
+    overflow: hidden;
+    user-select: none;
+    color: #000;
+  }
+
+  /* Win98 bevels */
+  .bevel-out {
+    border: 2px solid;
+    border-color: #ffffff #0a0a0a #0a0a0a #ffffff;
+    box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+    background: #c0c0c0;
+  }
+  .bevel-in {
+    border: 2px solid;
+    border-color: #808080 #ffffff #ffffff #808080;
+    box-shadow: inset 1px 1px 0 #0a0a0a, inset -1px -1px 0 #dfdfdf;
+    background: #c0c0c0;
+  }
+  .bevel-sunken {
+    border: 2px solid;
+    border-color: #808080 #ffffff #ffffff #808080;
+    background: #c0c0c0;
+  }
+  .win98-btn {
+    min-width: 18px;
+    padding: 6px;
+    font-size: 11px;
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    border: 2px solid;
+    border-color: #ffffff #0a0a0a #0a0a0a #ffffff;
+    box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+    background: #c0c0c0;
+  }
+  .win98-btn:active {
+    border-color: #0a0a0a #ffffff #ffffff #0a0a0a;
+    padding: 2px 5px 0 7px;
+  }
+  .win98-btn:disabled,
+  .win98-btn[disabled],
+  .win98-btn.disabled {
+    color: #808080 !important;
+    cursor: default !important;
+    text-shadow: 1px 1px 0 #ffffff !important;
+    border-color: #808080 #ffffff #ffffff #808080 !important;
+    box-shadow: inset -1px -1px 0 #dfdfdf, inset 1px 1px 0 #0a0a0a !important;
+    pointer-events: none;
+  }
+  .win98-btn:disabled:active,
+  .win98-btn[disabled]:active,
+  .win98-btn.disabled:active {
+    padding: 6px !important;
+    border-color: #808080 #ffffff #ffffff #808080 !important;
+    box-shadow: inset -1px -1px 0 #dfdfdf, inset 1px 1px 0 #0a0a0a !important;
+  }
+
+  /* ===== Game container (no inner title bar — the host window provides one) ===== */
+  #minefield {
+    width: 100%;
+    height: 100%;
+    background: #c0c0c0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4px;
+    gap: 4px;
+  }
+
+  /* Top bar: mine counter — smiley — timer */
+  .hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 4px 6px;
+    width: auto;
+    align-self: center;
+  }
+  .board-frame { display: flex; justify-content: center; align-items: center; }
+  .lcd {
+    background: #000;
+    color: #ff0000;
+    font-family: "Courier New", "DSEG7", monospace;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+    padding: 2px 6px;
+    border: 2px solid;
+    border-color: #808080 #ffffff #ffffff #808080;
+    box-shadow: inset 1px 1px 0 #0a0a0a, inset -1px -1px 0 #dfdfdf;
+    text-shadow: 0 0 2px #ff0000;
+    min-width: 50px;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+  .smiley {
+    width: 28px;
+    height: 28px;
+    background: #c0c0c0;
+    border: 2px solid;
+    border-color: #ffffff #0a0a0a #0a0a0a #ffffff;
+    box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 22px;
+    text-align: center;
+    padding: 0;
+  }
+  .smiley:active {
+    border-color: #0a0a0a #ffffff #ffffff #0a0a0a;
+  }
+
+  /* Board area */
+  .board-frame {
+    padding: 4px;
+    border: 2px solid;
+    border-color: #808080 #ffffff #ffffff #808080;
+    box-shadow: inset 1px 1px 0 #0a0a0a, inset -1px -1px 0 #dfdfdf;
+  }
+  #board {
+    display: grid;
+    gap: 1px;
+    background: #808080;
+    padding: 1px;
+  }
+
+  .cell {
+    width: 22px;
+    height: 22px;
+    background: #c0c0c0;
+    border: 2px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+    box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Courier New", monospace;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    color: #000;
+  }
+  .cell:active:not(.open):not(.flag) {
+    border-color: #808080 #ffffff #ffffff #808080;
+    box-shadow: none;
+  }
+  .cell.open {
+    background: #c0c0c0;
+    border: 1px solid #808080;
+    box-shadow: none;
+    cursor: default;
+  }
+  .cell.mine {
+    background: #ff0000;
+  }
+  .cell.mine.open {
+    background: #c0c0c0;
+  }
+  .cell.flag {
+    background: #c0c0c0;
+  }
+  .cell.c1 { color: #0000c0; }
+  .cell.c2 { color: #008000; }
+  .cell.c3 { color: #c00000; }
+  .cell.c4 { color: #000080; }
+  .cell.c5 { color: #800000; }
+  .cell.c6 { color: #008080; }
+  .cell.c7 { color: #000000; }
+  .cell.c8 { color: #808080; }
+
+  /* Bottom menu bar (Options) */
+  .footer {
+    display: flex;
+    gap: 6px;
+    padding: 4px 6px;
+    width: auto;
+    align-self: center;
+    align-items: center;
+  }
+
+  .hint {
+    position: fixed;
+    bottom: 2px; right: 4px;
+    color: #555;
+    font-size: 9px;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+  <div id="minefield">
+    <!-- header -->
+    <div class="hdr">
+      <div class="lcd" id="mines-lcd">000</div>
+      <button class="smiley" id="resetBtn" title="New game">🙂</button>
+      <div class="lcd" id="time-lcd">000</div>
+    </div>
+
+    <!-- board -->
+    <div class="board-frame">
+      <div id="board" role="grid" aria-label="Minefield board" title="Left-click to reveal a cell · Right-click to flag a mine"></div>
+    </div>
+
+    <!-- footer: difficulty selector -->
+    <div class="footer">
+      <button class="win98-btn" data-diff="beginner">Beginner</button>
+      <button class="win98-btn" data-diff="intermediate">Intermediate</button>
+      <button class="win98-btn" data-diff="expert">Expert</button>
+    </div>
+  </div>
+
+<script>
+/* =================================================================== */
+/*  DIFFICULTY PRESETS                                                  */
+/* =================================================================== */
+const PRESETS = {
+  beginner:     { rows: 9,  cols: 9,  mines: 10 },
+  intermediate: { rows: 16, cols: 16, mines: 40 },
+  expert:       { rows: 16, cols: 30, mines: 99 }
+};
+
+/* =================================================================== */
+/*  STATE                                                               */
+/* =================================================================== */
+const boardEl  = document.getElementById('board');
+const minesLcd = document.getElementById('mines-lcd');
+const timeLcd  = document.getElementById('time-lcd');
+const resetBtn = document.getElementById('resetBtn');
+
+let G = null;
+// G = { rows, cols, mines, grid: 2D, revealed: 2D, flagged: 2D, minesLeft, started, elapsed, timer }
+
+function newGame(preset) {
+  const cfg = PRESETS[preset] || PRESETS.beginner;
+  G = {
+    rows: cfg.rows,
+    cols: cfg.cols,
+    mines: cfg.mines,
+    grid:    make2D(cfg.rows, cfg.cols, () => ({ mine: false, n: 0 })),
+    revealed:make2D(cfg.rows, cfg.cols, false),
+    flagged: make2D(cfg.rows, cfg.cols, false),
+    minesLeft: cfg.mines,
+    started: false,
+    exploded: false,
+    won: false,
+    elapsed: 0,
+    timer: null
+  };
+  rebuildBoard();
+  fitBoardToScreen();
+  paintLCD(minesLcd, G.minesLeft);
+  paintLCD(timeLcd, 0);
+  resetBtn.textContent = '🙂';
+}
+
+function make2D(r, c, init) {
+  const a = new Array(r);
+  for (let i = 0; i < r; i++) { a[i] = new Array(c); for (let j = 0; j < c; j++) a[i][j] = init ? init() : 0; }
+  return a;
+}
+
+/* =================================================================== */
+/*  PLACE MINES (first click is always safe)                            */
+/* =================================================================== */
+function placeMines(safeR, safeC) {
+  const G2 = G;
+  const cells = [];
+  for (let r = 0; r < G2.rows; r++)
+    for (let c = 0; c < G2.cols; c++)
+      if (Math.abs(r - safeR) <= 1 && Math.abs(c - safeC) <= 1) continue;
+      else cells.push([r, c]);
+
+  // Fisher–Yates partial shuffle, pick first G2.mines
+  let n = Math.min(G2.mines, cells.length);
+  for (let i = 0; i < n; i++) {
+    const k = i + Math.floor(Math.random() * (cells.length - i));
+    const tmp = cells[i]; cells[i] = cells[k]; cells[k] = tmp;
+    const [r, c] = cells[i];
+    G2.grid[r][c].mine = true;
+  }
+  // Compute neighbour counts
+  for (let r = 0; r < G2.rows; r++) {
+    for (let c = 0; c < G2.cols; c++) {
+      if (G2.grid[r][c].mine) continue;
+      let k = 0;
+      for (let dr = -1; dr <= 1; dr++)
+        for (let dc = -1; dc <= 1; dc++) {
+          if (!dr && !dc) continue;
+          const nr = r + dr, nc = c + dc;
+          if (nr >= 0 && nr < G2.rows && nc >= 0 && nc < G2.cols && G2.grid[nr][nc].mine) k++;
+        }
+      G2.grid[r][c].n = k;
+    }
+  }
+}
+
+/* =================================================================== */
+/*  RENDER                                                               */
+/* =================================================================== */
+function rebuildBoard() {
+  boardEl.innerHTML = '';
+  boardEl.style.gridTemplateColumns = `repeat(${G.cols}, 22px)`;
+  for (let r = 0; r < G.rows; r++) {
+    for (let c = 0; c < G.cols; c++) {
+      const el = document.createElement('div');
+      el.className = 'cell';
+      el.dataset.r = r;
+      el.dataset.c = c;
+      el.setAttribute('role', 'gridcell');
+      // event handlers attached via delegation
+      boardEl.appendChild(el);
+    }
+  }
+}
+
+function fitBoardToScreen() {
+  // Cells now stay at their natural 24×24 size; the host window handles overflow.
+  // We only synchronize the board-frame to fit the board so edges look perfect.
+  const cell = 22, gap = 1, pad = 2;
+  const w = G.cols * cell + (G.cols - 1) * gap + pad;
+  const h = G.rows * cell + (G.rows - 1) * gap + pad;
+  boardEl.style.width  = w + 'px';
+  boardEl.style.height = h + 'px';
+  // make the header and footer line up with the board frame width
+  const frameW = w + 12; // board-frame has padding 4px on each side + border 2px
+  document.querySelector('.hdr').style.width = frameW + 'px';
+  document.querySelector('.footer').style.width = frameW + 'px';
+}
+
+function paintLCD(el, value) {
+  const s = String(Math.max(-99, Math.min(999, value | 0)));
+  el.textContent = (s.length === 3 ? '' : s.length === 2 ? '0' : '00') + s;
+}
+
+/* =================================================================== */
+/*  CLICK HANDLING                                                       */
+/* =================================================================== */
+boardEl.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+  const cell = e.target.closest('.cell');
+  if (!cell || !G || G.exploded || G.won) return;
+  const r = +cell.dataset.r, c = +cell.dataset.c;
+  if (G.revealed[r][c]) return;
+  if (G.flagged[r][c]) {
+    G.flagged[r][c] = false;
+    cell.classList.remove('flag');
+    cell.textContent = '';
+    G.minesLeft++;
+  } else {
+    G.flagged[r][c] = true;
+    cell.classList.add('flag');
+    cell.textContent = '⚑';
+    G.minesLeft--;
+  }
+  paintLCD(minesLcd, G.minesLeft);
+  checkWin();
+});
+
+boardEl.addEventListener('mousedown', (e) => {
+  if (!G || G.exploded || G.won) return;
+  if (e.button === 2) return;
+  const cell = e.target.closest('.cell');
+  if (!cell) return;
+  const r = +cell.dataset.r, c = +cell.dataset.c;
+  if (G.flagged[r][c]) return;
+  if (G.revealed[r][c]) {
+    // chord: reveal neighbors if flagged count matches number
+    chord(r, c);
+    return;
+  }
+  // smiley scared face
+  resetBtn.textContent = '😮';
+  cell.style.borderColor = '#808080 #ffffff #ffffff #808080';
+});
+
+boardEl.addEventListener('mouseup', (e) => {
+  resetBtn.textContent = G && G.exploded ? '😵' : (G && G.won ? '😎' : '🙂');
+  if (!G || G.exploded || G.won || e.button === 2) return;
+  const cell = e.target.closest('.cell');
+  if (!cell) return;
+  const r = +cell.dataset.r, c = +cell.dataset.c;
+  if (G.revealed[r][c]) return;
+  if (G.flagged[r][c]) return;
+  reveal(r, c);
+});
+
+resetBtn.addEventListener('click', () => newGame('beginner'));
+
+document.querySelectorAll('[data-diff]').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('[data-diff]').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    newGame(b.dataset.diff);
+  });
+});
+
+/* =================================================================== */
+/*  REVEAL / FLOOD-FILL                                                  */
+/* =================================================================== */
+function reveal(r, c) {
+  if (r < 0 || r >= G.rows || c < 0 || c >= G.cols) return;
+  if (G.revealed[r][c] || G.flagged[r][c]) return;
+
+  // First reveal: place mines (safe first click)
+  if (!G.started) {
+    placeMines(r, c);
+    G.started = true;
+    G.timer = setInterval(() => {
+      G.elapsed = Math.min(999, G.elapsed + 1);
+      paintLCD(timeLcd, G.elapsed);
+    }, 1000);
+  }
+
+  G.revealed[r][c] = true;
+  const cell = boardEl.children[r * G.cols + c];
+  cell.classList.add('open');
+  cell.classList.remove('flag');
+  if (G.grid[r][c].mine) {
+    cell.classList.add('mine');
+    cell.textContent = '✸';
+    explode();
+    return;
+  }
+  const n = G.grid[r][c].n;
+  if (n > 0) {
+    cell.textContent = n;
+    cell.classList.add('c' + n);
+  } else {
+    cell.textContent = '';
+    // flood-fill neighbours
+    for (let dr = -1; dr <= 1; dr++)
+      for (let dc = -1; dc <= 1; dc++)
+        if (dr || dc) reveal(r + dr, c + dc);
+  }
+  checkWin();
+}
+
+function chord(r, c) {
+  // only valid if revealed numbered cell has matching flags around it
+  if (!G.grid[r][c].mine && G.grid[r][c].n > 0 && G.revealed[r][c]) {
+    let f = 0;
+    for (let dr = -1; dr <= 1; dr++)
+      for (let dc = -1; dc <= 1; dc++) {
+        if (!dr && !dc) continue;
+        const nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < G.rows && nc >= 0 && nc < G.cols && G.flagged[nr][nc]) f++;
+      }
+    if (f === G.grid[r][c].n) {
+      for (let dr = -1; dr <= 1; dr++)
+        for (let dc = -1; dc <= 1; dc++) {
+          if (!dr && !dc) continue;
+          const nr = r + dr, nc = c + dc;
+          if (nr >= 0 && nr < G.rows && nc >= 0 && nc < G.cols && !G.flagged[nr][nc]) reveal(nr, nc);
+        }
+    }
+  }
+}
+
+function explode() {
+  G.exploded = true;
+  if (G.timer) clearInterval(G.timer);
+  resetBtn.textContent = '😵';
+  // show all mines
+  for (let r = 0; r < G.rows; r++) {
+    for (let c = 0; c < G.cols; c++) {
+      if (G.grid[r][c].mine) {
+        const cell = boardEl.children[r * G.cols + c];
+        if (!G.flagged[r][c]) {
+          cell.classList.add('mine');
+          cell.classList.remove('flag');
+          cell.textContent = '✸';
+        }
+      } else if (G.flagged[r][c]) {
+        // wrongly flagged
+        const cell = boardEl.children[r * G.cols + c];
+        cell.classList.add('mine');
+        cell.textContent = '✗';
+      }
+    }
+  }
+}
+
+function checkWin() {
+  if (!G || G.exploded) return;
+  let safeRevealed = 0;
+  for (let r = 0; r < G.rows; r++)
+    for (let c = 0; c < G.cols; c++)
+      if (!G.grid[r][c].mine && G.revealed[r][c]) safeRevealed++;
+  const totalSafe = G.rows * G.cols - G.mines;
+  if (safeRevealed === totalSafe) {
+    G.won = true;
+    if (G.timer) clearInterval(G.timer);
+    paintLCD(minesLcd, 0);
+    resetBtn.textContent = '😎';
+    // Auto-flag remaining mines
+    for (let r = 0; r < G.rows; r++)
+      for (let c = 0; c < G.cols; c++)
+        if (G.grid[r][c].mine && !G.flagged[r][c]) {
+          const cell = boardEl.children[r * G.cols + c];
+          cell.classList.add('flag');
+          cell.textContent = '⚑';
+        }
+  }
+}
+
+/* =================================================================== */
+/*  INIT                                                                 */
+/* =================================================================== */
+newGame('beginner');
+const beginnerBtn = document.querySelector('[data-diff="beginner"]');
+beginnerBtn.classList.add('on');
+
+window.addEventListener('resize', () => fitBoardToScreen());
+
+/* Teardown when host closes the window */
+function mfOnHostMessage(e) {
+  if (!e.data || e.data.type !== 'minefield-shutdown') return;
+  try { if (G && G.timer) clearInterval(G.timer); } catch (_) {}
+  try { window.removeEventListener('message', mfOnHostMessage); } catch (_) {}
+  try { document.body.innerHTML = ''; } catch (_) {}
+}
+window.addEventListener('message', mfOnHostMessage);
+</script>
+</body>
+</html>

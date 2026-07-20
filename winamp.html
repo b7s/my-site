@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Music Play</title>
+<style>
+  /* ===== Music Play (Winamp-inspired) — pure CSS ===== */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #2a2a2a;
+    font-family: "Pixelated MS Sans Serif", "MS Sans Serif", Verdana, sans-serif;
+    -webkit-font-smoothing: none;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* Bevel helpers */
+  .bevel-in {
+    border: 1px solid;
+    border-color: #808080 #ffffff #ffffff #808080;
+    background: #c0c0c0;
+  }
+  .bevel-deep {
+    border: 1px solid #0a0a0a;
+    box-shadow: inset 1px 1px 0 #555, inset -1px -1px 0 #000;
+    background: #000;
+  }
+
+  /* ===== Main window ===== */
+  #winamp {
+    width: 100%;
+    min-height: 100%;
+    background: #2a2a2a;
+    color: #d9d9d9;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px solid #0a0a0a;
+    box-shadow: inset 1px 1px 0 #6a6a6a, inset -1px -1px 0 #000;
+    font-size: 11px;
+  }
+
+  /* ===== INFO ROW (viz + marquee) ===== */
+  .wa-info {
+    padding: 2px;
+    display: flex;
+    gap: 2px;
+    height: 24px;
+    background: #2a2a2a;
+  }
+  /* Frequency bars (decorative static viz) */
+  .wa-vis {
+    flex: 1;
+    height: 20px;
+    background: #000;
+    border: 1px solid #0a0a0a;
+    box-shadow: inset 1px 1px 0 #555;
+    display: flex;
+    align-items: flex-end;
+    gap: 1px;
+    padding: 1px 2px;
+    overflow: hidden;
+  }
+  .wa-vis i {
+    flex: 1;
+    background: linear-gradient(0deg, #00ff00 0%, #00ff00 40%, #ffae00 70%, #ff0000 100%);
+    height: 2px;
+    transition: height .08s linear;
+  }
+  .wa-info-text {
+    width: 96px;
+    height: 20px;
+    background: #000;
+    border: 1px solid #0a0a0a;
+    box-shadow: inset 1px 1px 0 #555;
+    color: #00ff00;
+    font-family: "Courier New", monospace;
+    font-size: 10px;
+    line-height: 18px;
+    padding: 0 3px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-shadow: 0 0 2px #00ff00;
+  }
+  .wa-info-text.scroll {
+    text-overflow: clip;
+  }
+
+  /* ===== POSITION BAR (kbps / kHz / time) ===== */
+  .wa-meta {
+    display: flex;
+    gap: 2px;
+    padding: 0 2px;
+    height: 14px;
+    align-items: center;
+  }
+  .wa-led {
+    width: 26px;
+    height: 11px;
+    background: #000;
+    color: #00ff00;
+    font-family: "Courier New", monospace;
+    font-size: 9px;
+    line-height: 11px;
+    text-align: center;
+    border: 1px solid #0a0a0a;
+    box-shadow: inset 1px 1px 0 #555;
+    text-shadow: 0 0 2px #00ff00;
+  }
+  .wa-led.off { color: #0a3a0a; text-shadow: none; }
+  .wa-led+kbd { display:none; }
+  .wa-track-time {
+    margin-left: auto;
+    background: #000;
+    color: #00ff00;
+    font-family: "Courier New", monospace;
+    font-size: 10px;
+    padding: 1px 3px;
+    border: 1px solid #0a0a0a;
+    box-shadow: inset 1px 1px 0 #555;
+    min-width: 54px;
+    text-align: right;
+    text-shadow: 0 0 2px #00ff00;
+  }
+
+  /* ===== POSITION SLIDER ===== */
+  .wa-pos-row {
+    padding: 2px;
+    display: flex;
+    gap: 2px;
+    align-items: center;
+  }
+  .wa-pos {
+    flex: 1;
+    height: 10px;
+    background: #000;
+    border: 1px solid #0a0a0a;
+    box-shadow: inset 1px 1px 0 #555;
+    position: relative;
+    cursor: pointer;
+  }
+  .wa-pos-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: #00ff00;
+    width: 0%;
+    opacity: .25;
+  }
+  .wa-pos-thumb {
+    position: absolute;
+    top: 50%;
+    width: 10px;
+    height: 14px;
+    transform: translate(-50%, -50%);
+    background: #c0c0c0;
+    border: 1px solid;
+    border-color: #fff #0a0a0a #0a0a0a #fff;
+    box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+    pointer-events: none;
+  }
+
+  /* ===== CONTROL BUTTONS ROW ===== */
+  .wa-controls {
+    display: flex;
+    gap: 2px;
+    padding: 2px;
+    align-items: center;
+  }
+  .wa-btn {
+    width: 22px;
+    height: 18px;
+    background: #c0c0c0;
+    border: 1px solid;
+    border-color: #fff #0a0a0a #0a0a0a #fff;
+    box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+    color: #000;
+    font-size: 11px;
+    line-height: 16px;
+    text-align: center;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+  }
+  .wa-btn:active {
+    border-color: #0a0a0a #fff #fff #0a0a0a;
+    box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #dfdfdf;
+  }
+  .wa-btn.on {
+    border-color: #0a0a0a #fff #fff #0a0a0a;
+    box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #dfdfdf;
+    background: #aeaeae;
+  }
+  .wa-btn[disabled] {
+    color: #808080;
+    cursor: not-allowed;
+  }
+  .wa-btn svg { display:block; margin:auto; }
+
+  /* ===== Volume & Balance row ===== */
+  .wa-vol-row {
+    display: flex;
+    gap: 4px;
+    padding: 2px;
+    align-items: center;
+  }
+  .wa-vol-label {
+    width: 26px;
+    font-size: 9px;
+    color: #aeaeae;
+    text-align: center;
+  }
+  .wa-slider {
+    flex: 1;
+    height: 10px;
+    background: #000;
+    border: 1px solid #0a0a0a;
+    box-shadow: inset 1px 1px 0 #555;
+    position: relative;
+    cursor: pointer;
+  }
+  .wa-slider-fill {
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    background: #00ff00;
+    opacity: .35;
+  }
+  .wa-slider-thumb {
+    position: absolute;
+    top: 50%;
+    width: 6px;
+    height: 12px;
+    transform: translate(-50%, -50%);
+    background: #c0c0c0;
+    border: 1px solid;
+    border-color: #fff #0a0a0a #0a0a0a #fff;
+    pointer-events: none;
+  }
+
+  /* ===== PLAYLIST ===== */
+  #playlist-wrap {
+    background: #2a2a2a;
+    border-top: 1px solid #0a0a0a;
+    box-shadow: inset 1px 1px 0 #6a6a6a;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+  #playlist-wrap.hidden { display: none; }
+  .pl-titlebar {
+    height: 14px;
+    background: linear-gradient(180deg, #4a4a4a, #1a1a1a);
+    color: #fff;
+    font-size: 9px;
+    line-height: 14px;
+    padding: 0 4px 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #0a0a0a;
+    border-top: 1px solid #555;
+  }
+  .pl-list {
+    background: #000;
+    color: #00ff00;
+    font-family: "Courier New", monospace;
+    font-size: 10px;
+    margin: 2px;
+    padding: 0;
+    list-style: none;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 60px;
+    border: 1px solid #0a0a0a;
+    box-shadow: inset 1px 1px 0 #555;
+  }
+  .pl-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 4px;
+    cursor: pointer;
+    line-height: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .pl-item:hover { background: #003a00; }
+  .pl-item.current {
+    background: #00ff00;
+    color: #000;
+    text-shadow: none;
+    font-weight: 700;
+  }
+  .pl-item .pl-num { color: inherit; opacity: .7; min-width: 24px; }
+  .pl-item .pl-name { flex: 1; overflow: hidden; text-overflow: ellipsis; }
+  .pl-item .pl-time { opacity: .7; }
+  .pl-item.current .pl-num,
+  .pl-item.current .pl-time { opacity: 1; }
+
+  .pl-status {
+    border-top: 1px solid #0a0a0a;
+    padding: 2px 4px;
+    font-size: 9px;
+    color: #000;
+    display: flex;
+    justify-content: space-between;
+  }
+  .pl-status .bevel-in {
+    padding: 1px 5px;
+    font-size: 9px;
+  }
+
+  /* ===== Disable user text selection while dragging ===== */
+  .dragging { user-select: none !important; }
+
+  /* ===== tiny hint ===== */
+  .hint {
+    position: fixed;
+    bottom: 4px; left: 4px;
+    color: #666;
+    font-size: 9px;
+    pointer-events: none;
+  }
+
+  audio { display: none; }
+</style>
+</head>
+<body>
+  <div id="winamp">
+    <!-- Info row: viz + marquee -->
+    <div class="wa-info">
+      <div class="wa-vis" id="vis"></div>
+      <div class="wa-info-text" id="info-text">Music Play — stopped</div>
+    </div>
+
+    <!-- Meta row: kbps / kHz / mono / time -->
+    <div class="wa-meta">
+      <span class="wa-led" id="led-rate">128</span>
+      <span class="wa-led" id="led-freq">44</span>
+      <span class="wa-led" id="led-mono">MONO</span>
+      <span class="wa-track-time" id="time">00:00</span>
+    </div>
+
+    <!-- Position slider -->
+    <div class="wa-pos-row">
+      <div class="wa-pos" id="pos">
+        <div class="wa-pos-fill" id="pos-fill"></div>
+        <div class="wa-pos-thumb" id="pos-thumb" style="left:0%"></div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="wa-controls">
+      <button class="wa-btn" id="btn-prev" title="Previous">
+        <svg width="14" height="10" viewBox="0 0 14 10"><polygon points="14,1 6,5 14,9" fill="#000"/><rect x="0" y="1" width="2" height="8" fill="#000"/></svg>
+      </button>
+      <button class="wa-btn" id="btn-play" title="Play">
+        <svg width="14" height="10" viewBox="0 0 14 10"><polygon points="0,0 14,5 0,10" fill="#000"/></svg>
+      </button>
+      <button class="wa-btn" id="btn-pause" title="Pause">
+        <svg width="14" height="10" viewBox="0 0 14 10"><rect x="0" y="0" width="4" height="10" fill="#000"/><rect x="10" y="0" width="4" height="10" fill="#000"/></svg>
+      </button>
+      <button class="wa-btn" id="btn-stop" title="Stop">
+        <svg width="14" height="10" viewBox="0 0 14 10"><rect x="0" y="0" width="14" height="10" fill="#000"/></svg>
+      </button>
+      <button class="wa-btn" id="btn-next" title="Next">
+        <svg width="14" height="10" viewBox="0 0 14 10"><polygon points="0,1 8,5 0,9" fill="#000"/><rect x="12" y="1" width="2" height="8" fill="#000"/></svg>
+      </button>
+      <button class="wa-btn" id="btn-shuffle" title="Shuffle">S</button>
+      <button class="wa-btn" id="btn-loop" title="Repeat">R</button>
+    </div>
+
+    <!-- Volume + Balance -->
+    <div class="wa-vol-row">
+      <span class="wa-vol-label">VOL</span>
+      <div class="wa-slider" id="vol">
+        <div class="wa-slider-fill" id="vol-fill" style="width:75%"></div>
+        <div class="wa-slider-thumb" id="vol-thumb" style="left:75%"></div>
+      </div>
+      <span class="wa-vol-label">BAL</span>
+      <div class="wa-slider" id="bal">
+        <div class="wa-slider-fill" id="bal-fill" style="width:50%"></div>
+        <div class="wa-slider-thumb" id="bal-thumb" style="left:50%"></div>
+      </div>
+    </div>
+
+    <!-- Playlist -->
+    <div id="playlist-wrap">
+      <div class="pl-titlebar">
+        <span>Playlist</span>
+      </div>
+      <ul class="pl-list" id="playlist"></ul>
+      <div class="pl-status">
+        <span class="bevel-in" id="pl-count">0 tracks</span>
+        <span class="bevel-in" id="pl-total">00:00</span>
+      </div>
+    </div>
+  </div>
+
+  <audio id="audio" preload="metadata"></audio>
+
+  <div class="hint">Double-click a track to play · Drag slider to seek</div>
+
+<script>
+/* =================================================================== */
+/*  PLAYLIST — generated from assets/musics/*.mp3                      */
+/*  Both the file path and a clean display name (underscores removed)  */
+/* =================================================================== */
+const TRACKS = [
+  { file: "assets/musics/Call_My_Name_FULL_SONG_MusicGPT.mp3",     name: "Call My Name" },
+  { file: "assets/musics/Endless_Pain_FULL_SONG_MusicGPT.mp3",      name: "Endless Pain" },
+  { file: "assets/musics/Hold_Me_Now_FULL_SONG_MusicGPT.mp3",       name: "Hold Me Now" }
+];
+
+/* =================================================================== */
+/*  STATE                                                              */
+/* =================================================================== */
+const audio   = document.getElementById("audio");
+const $info   = document.getElementById("info-text");
+const $time   = document.getElementById("time");
+const $pos    = document.getElementById("pos");
+const $posF   = document.getElementById("pos-fill");
+const $posT   = document.getElementById("pos-thumb");
+const $vol    = document.getElementById("vol");
+const $volF   = document.getElementById("vol-fill");
+const $volT   = document.getElementById("vol-thumb");
+const $bal    = document.getElementById("bal");
+const $balF   = document.getElementById("bal-fill");
+const $balT   = document.getElementById("bal-thumb");
+const $pl     = document.getElementById("playlist");
+const $plWrap = document.getElementById("playlist-wrap");
+const $plCount= document.getElementById("pl-count");
+const $plTot  = document.getElementById("pl-total");
+const $vis    = document.getElementById("vis");
+const $ledRate= document.getElementById("led-rate");
+const $ledFreq= document.getElementById("led-freq");
+const $ledMono= document.getElementById("led-mono");
+
+const state = {
+  idx: 0,
+  playing: false,
+  shuffle: false,
+  loop: false,          // false | true (repeat all) — kept simple
+  loopOne: false,        // alt-click R to repeat the same track
+  volume: 75,
+  balance: 0,           // -100..100 (0=center)
+  durations: [],        // filled as metadata loads
+  shuffleHistory: []
+};
+
+/* =================================================================== */
+/*  HELPERS                                                            */
+/* =================================================================== */
+function fmt(sec) {
+  if (!isFinite(sec) || sec < 0) sec = 0;
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+}
+function basename(p) { return p.split("/").pop(); }
+function escapeHtml(s){ return s.replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[c])); }
+
+/* Apply volume / balance to the audio element */
+function applyGain() {
+  const v = state.volume / 100;             // 0..1
+  const b = state.balance / 100;             // -1..1
+  // balance aware gain: pan pot law approx
+  const gL = v * (b <= 0 ? 1 : (1 - b));
+  const gR = v * (b >= 0 ? 1 : (1 + b));
+  audio.volume = Math.max(gL, gR);          // base element only supports overall volume
+  // We use stereo balance by lowering channel via WebAudio if available
+  if (audioCtx && balanceNode) {
+    balanceNode.pan.value = b;
+    gainNode.gain.value   = v;
+    audio.volume = 1;
+  }
+}
+
+/* =================================================================== */
+/*  WEBAUDIO — optional pan + analyser for nicer viz                   */
+/* =================================================================== */
+let audioCtx=null, balanceNode=null, gainNode=null, analyser=null, sourceNode=null;
+function setupAudioGraph() {
+  if (audioCtx) {
+    if (!sourceNode) sourceNode = audioCtx.createMediaElementSource(audio);
+    return;
+  }
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AC();
+    sourceNode = audioCtx.createMediaElementSource(audio);
+    gainNode   = audioCtx.createGain();
+    balanceNode= audioCtx.createStereoPanner ? audioCtx.createStereoPanner() : null;
+    analyser   = audioCtx.createAnalyser();
+    analyser.fftSize = 32;
+    sourceNode.connect(gainNode);
+    if (balanceNode) { gainNode.connect(balanceNode); balanceNode.connect(analyser); }
+    else { gainNode.connect(analyser); }
+    analyser.connect(audioCtx.destination);
+  } catch(e) { /* fallback to plain element volume */ }
+}
+
+/* =================================================================== */
+/*  VISUALIZER                                                          */
+/* =================================================================== */
+const BAR_COUNT = 16;
+const bars = [];
+for (let i=0; i<BAR_COUNT; i++){ const b=document.createElement("i"); $vis.appendChild(b); bars.push(b); }
+let visTimer=null;
+function startVis(){
+  if (visTimer) return;
+  visTimer = setInterval(()=>{
+    if (!state.playing) return;
+    if (analyser) {
+      const arr = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(arr);
+      for (let i=0;i<BAR_COUNT;i++){
+        const v = arr[i % arr.length] || 0;
+        bars[i].style.height = (4 + (v/255)*16) + "px";
+      }
+    } else {
+      // pseudo-random fallback if WebAudio unavailable
+      for (let i=0;i<BAR_COUNT;i++){
+        bars[i].style.height = (4 + Math.random()*14) + "px";
+      }
+    }
+  }, 80);
+}
+function stopVis(){
+  if (visTimer) { clearInterval(visTimer); visTimer=null; }
+  bars.forEach(b=> b.style.height = "2px");
+}
+
+/* =================================================================== */
+/*  PLAYLIST RENDERING                                                  */
+/* =================================================================== */
+function renderPlaylist(){
+  $pl.innerHTML = "";
+  TRACKS.forEach((t,i)=>{
+    const li = document.createElement("li");
+    li.className = "pl-item" + (i===state.idx ? " current" : "");
+    li.dataset.idx = i;
+    const dur = state.durations[i];
+    li.innerHTML =
+      '<span class="pl-num">'+String(i+1).padStart(2,"0")+'.</span>' +
+      '<span class="pl-name">'+escapeHtml(t.name)+'</span>' +
+      '<span class="pl-time">'+(dur?fmt(dur):"--:--")+'</span>';
+    li.addEventListener("dblclick", ()=>{ playIndex(i); });
+    li.addEventListener("click", ()=>{ state.idx = i; renderPlaylist(); if(!state.playing) loadCurrent(); });
+    $pl.appendChild(li);
+  });
+  $plCount.textContent = TRACKS.length + " track" + (TRACKS.length===1?"":"s");
+  const total = state.durations.reduce((a,b)=>a+(b||0),0);
+  $plTot.textContent = total ? fmt(total) : "--:--";
+}
+
+/* =================================================================== */
+/*  PLAYBACK CONTROL                                                    */
+/* =================================================================== */
+function loadCurrent(){
+  audio.src = TRACKS[state.idx].file;
+  audio.load();
+  $info.textContent = TRACKS[state.idx].name;
+  // mark current row
+  renderPlaylist();
+}
+function playCurrent(){
+  setupAudioGraph();
+  if (audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+  applyGain();
+  const p = audio.play();
+  if (p && p.catch) p.catch(()=>{/* autoplay blocked / src missing */});
+  state.playing = true;
+  startVis();
+  $info.textContent = TRACKS[state.idx].name;
+  markActive("btn-play");
+}
+function pause(){
+  audio.pause();
+  state.playing = false;
+  stopVis();
+  markActive("btn-pause");
+}
+function stop(){
+  audio.pause();
+  audio.currentTime = 0;
+  state.playing = false;
+  stopVis();
+  $time.textContent = "00:00";
+  $posF.style.width = "0%";
+  $posT.style.left  = "0%";
+  $info.textContent = "Music Play — stopped";
+  markActive("btn-stop");
+}
+function playIndex(i){
+  state.idx = ((i % TRACKS.length) + TRACKS.length) % TRACKS.length;
+  loadCurrent();
+  playCurrent();
+}
+function next(){
+  if (state.shuffle) {
+    if (TRACKS.length === 1) { return loopOrStop(); }
+    let n;
+    do { n = Math.floor(Math.random()*TRACKS.length); } while (n === state.idx);
+    state.shuffleHistory.push(state.idx);
+    state.idx = n;
+  } else {
+    state.idx = (state.idx + 1) % TRACKS.length;
+  }
+  loadCurrent(); playCurrent();
+}
+function prev(){
+  if (audio.currentTime > 3) { audio.currentTime = 0; return; }
+  if (state.shuffle && state.shuffleHistory.length) {
+    state.idx = state.shuffleHistory.pop();
+  } else {
+    state.idx = (state.idx - 1 + TRACKS.length) % TRACKS.length;
+  }
+  loadCurrent(); playCurrent();
+}
+function loopOrStop(){
+  if (state.loop) {
+    state.idx = (state.idx + 1) % TRACKS.length;
+    loadCurrent(); playCurrent();
+  } else if (state.loopOne) {
+    audio.currentTime = 0; playCurrent();
+  } else {
+    stop();
+  }
+}
+
+let activeBtn=null;
+function markActive(id){
+  if (activeBtn) document.getElementById(activeBtn)?.classList.remove("on");
+  activeBtn = id;
+  if (id) document.getElementById(id)?.classList.add("on");
+}
+
+/* =================================================================== */
+/*  EVENT BINDINGS                                                      */
+/* =================================================================== */
+document.getElementById("btn-play").addEventListener("click", ()=>{
+  if (!state.playing) {
+    if (!audio.src) loadCurrent();
+    playCurrent();
+  }
+});
+document.getElementById("btn-pause").addEventListener("click", ()=>{ if(state.playing) pause(); else if(audio.src) playCurrent(); });
+document.getElementById("btn-stop").addEventListener("click", stop);
+document.getElementById("btn-next").addEventListener("click", next);
+document.getElementById("btn-prev").addEventListener("click", prev);
+
+const $btnShuffle = document.getElementById("btn-shuffle");
+const $btnLoop     = document.getElementById("btn-loop");
+$btnShuffle.addEventListener("click", ()=>{
+  state.shuffle = !state.shuffle;
+  $btnShuffle.classList.toggle("on", state.shuffle);
+  if (!state.shuffle) state.shuffleHistory = [];
+});
+$btnLoop.addEventListener("click", (e)=>{
+  if (e.altKey) {
+    state.loopOne = !state.loopOne;
+    state.loop = false;
+  } else {
+    state.loop = !state.loop;
+    state.loopOne = false;
+  }
+  $btnLoop.classList.toggle("on", state.loop || state.loopOne);
+});
+$btnLoop.title = "Repeat (Alt+click = repeat one track)";
+
+/* Playlist toggle + teardown: the host window's title bar sends these via postMessage */
+function onHostMessage(e) {
+  if (!e.data || typeof e.data !== "object") return;
+  if (e.data.type === "winamp-toggle-playlist") {
+    const hidden = $plWrap.classList.toggle("hidden");
+    parent.postMessage({type:"winamp-playlist-state", hidden}, "*");
+  } else if (e.data.type === "winamp-shutdown") {
+    shutdown();
+  }
+}
+window.addEventListener("message", onHostMessage);
+
+function shutdown() {
+  try {
+    audio.pause();
+    audio.currentTime = 0;
+    audio.removeAttribute("src");
+    audio.load();
+    stopVis();
+    state.playing = false;
+    state.shuffleHistory = [];
+  } catch (_) {}
+  try { if (audioCtx) { audioCtx.close().catch(()=>{}); audioCtx = null; sourceNode = null; analyser = null; gainNode = null; balanceNode = null; } } catch(_) {}
+  try { window.removeEventListener("message", onHostMessage); } catch(_) {}
+  try { document.body.innerHTML = ""; } catch(_) {}
+}
+
+/* =================================================================== */
+/*  SLIDER DRAG (position + volume + balance)                          */
+/* =================================================================== */
+function sliderDrag(el, fillEl, thumbEl, onUpdate, opts){
+  let dragging = false;
+  const orient = opts && opts.bipolar ? "bipolar" : "forward";
+  function setFromEvent(ev){
+    const r = el.getBoundingClientRect();
+    let pct = (ev.clientX - r.left) / r.width;
+    pct = Math.max(0, Math.min(1, pct));
+    if (orient === "bipolar") {
+      // map 0..1 → -1..1, but snap-to-center
+      let v = pct * 2 - 1;
+      if (Math.abs(v) < 0.05) v = 0;
+      onUpdate(v);
+    } else {
+      onUpdate(pct);
+    }
+  }
+  el.addEventListener("mousedown", (e)=>{ dragging=true; document.body.classList.add("dragging"); setupAudioGraph(); setFromEvent(e); });
+  document.addEventListener("mousemove", (e)=>{ if(dragging) setFromEvent(e); });
+  document.addEventListener("mouseup",   ()=>{ if(dragging){ dragging=false; document.body.classList.remove("dragging"); } });
+}
+
+sliderDrag($pos, $posF, $posT, (pct)=>{
+  if (audio.duration && isFinite(audio.duration)) {
+    audio.currentTime = pct * audio.duration;
+  }
+  $posF.style.width = (pct*100) + "%";
+  $posT.style.left  = (pct*100) + "%";
+});
+
+sliderDrag($vol, $volF, $volT, (pct)=>{
+  state.volume = Math.round(pct*100);
+  $volF.style.width = (state.volume) + "%";
+  $volT.style.left  = (state.volume) + "%";
+  applyGain();
+});
+
+sliderDrag($bal, $balF, $balT, (val)=>{
+  state.balance = Math.round(val*100);    // -100 .. +100
+  const v = state.balance;
+  if (v >= 0) {
+    // right-pan: fill grows from center to right
+    $balF.style.left = "50%";
+    $balF.style.width = (v / 2) + "%";
+    $balT.style.left = (50 + v / 2) + "%";
+  } else {
+    // left-pan: fill grows from center to left
+    $balF.style.left = (50 + v / 2) + "%";
+    $balF.style.width = (-v / 2) + "%";
+    $balT.style.left = (50 + v / 2) + "%";
+  }
+  applyGain();
+}, {bipolar:true});
+// init balance visual
+$balF.style.left = "50%";
+$balF.style.width = "0%";
+$balT.style.left = "50%";
+
+/* =================================================================== */
+/*  AUDIO ELEMENT EVENTS                                                */
+/* =================================================================== */
+audio.addEventListener("timeupdate", ()=>{
+  if (draggingPos) return;
+  const cur = audio.currentTime || 0;
+  const dur = audio.duration || 0;
+  $time.textContent = fmt(cur);
+  if (dur > 0) {
+    const pct = (cur/dur) * 100;
+    $posF.style.width = pct + "%";
+    $posT.style.left  = pct + "%";
+  }
+});
+let draggingPos = false;
+$pos.addEventListener("mousedown", ()=>{ draggingPos = true; });
+document.addEventListener("mouseup",   ()=>{ draggingPos = false; });
+
+audio.addEventListener("loadedmetadata", ()=>{
+  state.durations[state.idx] = audio.duration;
+  renderPlaylist();
+  // heuristic: assume 128kbps/44.1kHz mono mp3
+  $ledRate.textContent = "128";
+  $ledFreq.textContent = "44";
+  $ledMono.textContent = "MONO";
+});
+
+audio.addEventListener("ended", loopOrStop);
+
+audio.addEventListener("play", ()=>{ state.playing = true; startVis(); markActive("btn-play"); });
+audio.addEventListener("pause", ()=>{ state.playing = false; stopVis(); if (audio.currentTime>0) {} });
+
+/* keyboard shortcut (space play/pause) */
+document.addEventListener("keydown", (e)=>{
+  if (e.target.tagName === "INPUT") return;
+  if (e.code === "Space") { e.preventDefault(); state.playing ? pause() : (audio.src? playCurrent() : playIndex(0)); }
+  if (e.code === "ArrowRight") next();
+  if (e.code === "ArrowLeft")  prev();
+});
+
+/* =================================================================== */
+/*  INIT                                                                */
+/* =================================================================== */
+renderPlaylist();
+loadCurrent();   // preload first track metadata (does not autoplay)
+$info.textContent = "Music Play — stopped";
+applyGain();
+</script>
+</body>
+</html>
