@@ -66,6 +66,6 @@ This project is **open source** and available for anyone to use as inspiration o
 
 ## Certifications
 
-[![Laravel Senior Certificate](https://brunots.dev/images/badge-laravel-senior.png)](https://verifier.certificationforlaravel.org/1c0b7ea2-89ac-4351-a58b-c399556e9839)
+[![Laravel Senior Certificate](images/badge-laravel-senior.png)](https://verifier.certificationforlaravel.org/1c0b7ea2-89ac-4351-a58b-c399556e9839)
 
 Laravel Senior Certificate — [verify authenticity](https://verifier.certificationforlaravel.org/1c0b7ea2-89ac-4351-a58b-c399556e9839).
