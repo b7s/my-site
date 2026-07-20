@@ -188,11 +188,25 @@
     .start-menu {
       position: absolute;
       bottom: 30px; left: 2px;
-      width: 200px;
+      width: 220px;
       z-index: 9999;
       display: none;
     }
-    .start-menu.open { display: block; }
+    .start-menu.open { display: flex; flex-direction: row; }
+    .start-menu-title {
+      width: 28px;
+      flex-shrink: 0;
+      background: linear-gradient(0deg, #1084d0, #000080);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 1px;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     .start-menu .win98-btn {
       display: block;
@@ -344,9 +358,7 @@
 
     <!-- ============ START MENU ============ -->
     <nav class="start-menu bevel-out" id="startMenu" aria-label="Start menu">
-      <div style="background:linear-gradient(180deg,#000080,#1084d0); color:#fff; padding:6px 8px; font-weight:700; font-size:13px;">
-        <span style="font-size:18px;">🪟</span> BrunoTS
-      </div>
+      <div class="start-menu-title">BrunoTS</div>
       <div class="p-1">
         <a class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px; text-decoration:none; color:#000;" href="https://brunots.dev/" target="_blank" rel="noopener">🌐 brunots.dev</a>
         <button class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px;" data-open="win-projects">📁 My Projects</button>
