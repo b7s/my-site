@@ -8,12 +8,13 @@
   /* ===== Minefield (Win98-styled) — pure CSS ===== */
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html, body {
-    height: 100%;
+  html { overflow: auto; }
+  body {
+    min-width: 100%;
+    min-height: 100%;
     background: #c0c0c0;
     font-family: "Pixelated MS Sans Serif", "MS Sans Serif", Tahoma, sans-serif;
     -webkit-font-smoothing: none;
-    overflow: hidden;
     user-select: none;
     color: #000;
   }
@@ -72,14 +73,15 @@
 
   /* ===== Game container (no inner title bar — the host window provides one) ===== */
   #minefield {
-    width: 100%;
-    height: 100%;
+    min-width: 100%;
+    min-height: 100%;
     background: #c0c0c0;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 4px;
     gap: 4px;
+    box-sizing: border-box;
   }
 
   /* Top bar: mine counter — smiley — timer */
@@ -268,6 +270,7 @@ function newGame(preset) {
   paintLCD(minesLcd, G.minesLeft);
   paintLCD(timeLcd, 0);
   resetBtn.textContent = '🙂';
+  requestHostResize();
 }
 
 function make2D(r, c, init) {
@@ -411,6 +414,24 @@ document.querySelectorAll('[data-diff]').forEach(b => {
   });
 });
 
+/* Ask the host window to resize so the board fits.
+   On desktop the host grows the window; on mobile it stays compact and scrolls. */
+function requestHostResize() {
+  const cell = 22, gap = 1, pad = 2;
+  const boardW = G.cols * cell + (G.cols - 1) * gap + pad;
+  const boardH = G.rows * cell + (G.rows - 1) * gap + pad;
+  // header (~38) + gap (4) + board-frame + gap (4) + footer (~25) + page padding (4*2)
+  const contentW = boardW + 8;
+  const contentH = 38 + 4 + boardH + 4 + 25 + 8;
+  try {
+    parent.postMessage({
+      type: "minefield-resize",
+      width: contentW,
+      height: contentH
+    }, "*");
+  } catch (_) {}
+}
+
 /* =================================================================== */
 /*  REVEAL / FLOOD-FILL                                                  */
 /* =================================================================== */
@@ -537,6 +558,11 @@ function mfOnHostMessage(e) {
   try { document.body.innerHTML = ''; } catch (_) {}
 }
 window.addEventListener('message', mfOnHostMessage);
+
+/* Block the browser's right-click menu anywhere in this iframe.
+   The board's own contextmenu handler still runs first (it calls
+   preventDefault itself and toggles a flag), so gameplay is unaffected. */
+document.addEventListener("contextmenu", (e) => e.preventDefault());
 </script>
 </body>
 </html>

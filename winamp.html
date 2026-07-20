@@ -406,8 +406,6 @@
 
   <audio id="audio" preload="metadata"></audio>
 
-  <div class="hint">Double-click a track to play · Drag slider to seek</div>
-
 <script>
 /* =================================================================== */
 /*  PLAYLIST — generated from assets/musics/*.mp3                      */
@@ -626,14 +624,39 @@ function prev(){
   loadCurrent(); playCurrent();
 }
 function loopOrStop(){
-  if (state.loop) {
-    state.idx = (state.idx + 1) % TRACKS.length;
-    loadCurrent(); playCurrent();
-  } else if (state.loopOne) {
+  // Repeat-one: always replay the current track.
+  if (state.loopOne) {
     audio.currentTime = 0; playCurrent();
+    return;
+  }
+  const isLast = state.idx >= TRACKS.length - 1;
+  if (shuffleEffective()) {
+    // Shuffle: just pick another random track (and stop if no repeat and we're at the end).
+    if (isLast && !state.loop) {
+      stop();
+    } else {
+      next();
+    }
+    return;
+  }
+  if (!isLast) {
+    // Auto-advance to the next track.
+    next();
+    return;
+  }
+  // We just finished the LAST track:
+  if (state.loop) {
+    // Repeat-all: wrap around to the first track.
+    state.idx = 0;
+    loadCurrent(); playCurrent();
   } else {
+    // No repeat: stop after the last track.
     stop();
   }
+}
+
+function shuffleEffective() {
+  return state.shuffle && TRACKS.length > 1;
 }
 
 let activeBtn=null;
@@ -810,6 +833,9 @@ renderPlaylist();
 loadCurrent();   // preload first track metadata (does not autoplay)
 $info.textContent = "Music Play — stopped";
 applyGain();
+
+/* Block the browser's right-click menu inside the player iframe. */
+document.addEventListener("contextmenu", (e) => e.preventDefault());
 </script>
 </body>
 </html>
