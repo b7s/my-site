@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Bruno TS — Laravel Developer & Software Engineer | brunots.dev</title>
+
+  <meta name="description" content="Bruno (brunots) — Software Engineer specialized in Laravel, async systems and PHP. A Windows 98 style portfolio with GitHub projects, the Laravel Senior certificate and the site brunots.dev." />
+  <meta name="keywords" content="Bruno, brunots, brunots.dev, Laravel, PHP, Software Engineer, Laravel developer, Laravel Senior certificate, GitHub, async systems, fluentvox, whisper-php, catraca, neuraphp, Brazil" />
+  <meta name="author" content="Bruno (brunots)" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#008080" />
+  <link rel="canonical" href="https://brunots.dev/" />
+
+  <link rel="icon" type="image/webp" href="https://brunots.dev/images/favicon.webp" />
+  <link rel="alternate" hreflang="en" href="https://brunots.dev/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:site_name" content="brunots.dev" />
+  <meta property="og:title" content="Bruno TS — Laravel Developer & Software Engineer" />
+  <meta property="og:description" content="Software Engineer specialized in Laravel and PHP. GitHub projects, the Laravel Senior certificate and the site brunots.dev, in a Windows 98 style portfolio." />
+  <meta property="og:url" content="https://brunots.dev/" />
+  <meta property="og:image" content="https://brunots.dev/images/badge-laravel-senior.png" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Bruno TS — Laravel Developer & Software Engineer" />
+  <meta name="twitter:description" content="Software Engineer specialized in Laravel and PHP. Laravel Senior certificate and GitHub projects." />
+  <meta name="twitter:image" content="https://brunots.dev/images/badge-laravel-senior.png" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Bruno",
+    "alternateName": "brunots",
+    "url": "https://brunots.dev/",
+    "image": "https://avatars.githubusercontent.com/u/1450085?v=4",
+    "jobTitle": "Software Engineer",
+    "address": { "@type": "PostalAddress", "addressCountry": "BR" },
+    "sameAs": [
+      "https://github.com/brunots",
+      "https://brunots.dev/"
+    ],
+    "knowsAbout": ["Laravel", "PHP", "JavaScript", "Software Engineering", "Async Systems"],
+    "hasCredential": {
+      "@type": "EducationalOccupationalCredential",
+      "name": "Laravel Senior Certificate",
+      "url": "https://verifier.certificationforlaravel.org/1c0b7ea2-89ac-4351-a58b-c399556e9839",
+      "credentialCategory": "professional"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "brunots.dev",
+    "url": "https://brunots.dev/",
+    "author": { "@type": "Person", "name": "Bruno", "alternateName": "brunots" }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "GitHub Projects by Bruno (brunots)",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "item": { "@type": "SoftwareSourceCode", "name": "fluentvox", "url": "https://github.com/b7s/fluentvox", "description": "Unleash state-of-the-art Text-To-Speech and voice cloning in PHP applications", "programmingLanguage": "PHP" } },
+      { "@type": "ListItem", "position": 2, "item": { "@type": "SoftwareSourceCode", "name": "fluentcut", "url": "https://github.com/b7s/fluentcut", "description": "Craft and compose videos programmatically in PHP with an elegant fluent API", "programmingLanguage": "PHP" } },
+      { "@type": "ListItem", "position": 3, "item": { "@type": "SoftwareSourceCode", "name": "fluentvision", "url": "https://github.com/b7s/fluentvision", "description": "Fluent API package providing a unified interface to two object detection backends", "programmingLanguage": "PHP" } },
+      { "@type": "ListItem", "position": 4, "item": { "@type": "SoftwareSourceCode", "name": "whisper-php", "url": "https://github.com/b7s/whisper-php", "description": "A fluent state-of-the-art Speech-To-Text API for PHP/Laravel applications", "programmingLanguage": "PHP" } },
+      { "@type": "ListItem", "position": 5, "item": { "@type": "SoftwareSourceCode", "name": "catraca", "url": "https://github.com/b7s/catraca", "description": "PHP Quality Guardian enforcing the ratchet principle: quality can only improve, never regress", "programmingLanguage": "PHP" } },
+      { "@type": "ListItem", "position": 6, "item": { "@type": "SoftwareSourceCode", "name": "zenith", "url": "https://github.com/b7s/zenith", "description": "Zenith - a Rust project by b7s", "programmingLanguage": "Rust" } },
+      { "@type": "ListItem", "position": 7, "item": { "@type": "SoftwareSourceCode", "name": "skill-laravel-statecraft", "url": "https://github.com/b7s/skill-laravel-statecraft", "description": "Laravel backend skill enforcing bounded contexts, state machines and job orchestration", "programmingLanguage": "PHP" } },
+      { "@type": "ListItem", "position": 8, "item": { "@type": "SoftwareSourceCode", "name": "neuraphp", "url": "https://github.com/b7s/neuraphp", "description": "Local AI embeddings for PHP - no APIs, no subscriptions, no external services", "programmingLanguage": "PHP" } }
+    ]
+  }
+  </script>
+
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+
+  <style>
+    :root {
+      --c-face: #c0c0c0;
+      --c-face-light: #ffffff;
+      --c-face-dark: #808080;
+      --c-face-darker: #000000;
+      --c-desktop: #008080;
+      --c-title: #000080;
+      --c-title-grad: #1084d0;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      font-family: "Pixelated MS Sans Serif", "MS Sans Serif", Tahoma, Geneva, sans-serif;
+      background: var(--c-desktop);
+      overflow: hidden;
+      -webkit-font-smoothing: none;
+    }
+
+    /* Win98 bevels */
+    .bevel-out {
+      border: 2px solid;
+      border-color: var(--c-face-light) var(--c-face-darker) var(--c-face-darker) var(--c-face-light);
+      box-shadow: inset 1px 1px 0 var(--c-face), inset -1px -1px 0 var(--c-face-dark);
+      background: var(--c-face);
+    }
+    .bevel-in {
+      border: 2px solid;
+      border-color: var(--c-face-dark) var(--c-face-light) var(--c-face-light) var(--c-face-dark);
+      background: var(--c-face);
+    }
+    .bevel-sunken {
+      border: 2px solid;
+      border-color: var(--c-face-dark) var(--c-face-light) var(--c-face-light) var(--c-face-dark);
+      background: #fff;
+    }
+
+    .win98-btn {
+      min-width: 18px;
+      padding: 1px 6px;
+      font-size: 11px;
+      line-height: 1;
+      cursor: pointer;
+      user-select: none;
+      border: 2px solid;
+      border-color: var(--c-face-light) var(--c-face-darker) var(--c-face-darker) var(--c-face-light);
+      background: var(--c-face);
+    }
+    .win98-btn:active {
+      border-color: var(--c-face-darker) var(--c-face-light) var(--c-face-light) var(--c-face-darker);
+      padding: 2px 5px 0 7px;
+    }
+
+    .title-bar {
+      background: linear-gradient(90deg, var(--c-title), var(--c-title-grad));
+      color: #fff;
+      padding: 2px 3px 2px 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: grab;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    .title-bar:active { cursor: grabbing; }
+    .title-bar.inactive { background: linear-gradient(90deg, #808080, #b5b5b5); }
+
+    .window {
+      position: absolute;
+      background: var(--c-face);
+      min-width: 220px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .taskbar-btn.active {
+      border-color: var(--c-face-darker) var(--c-face-light) var(--c-face-light) var(--c-face-darker);
+      background: repeating-conic-gradient(#bdbdbd 0% 25%, #c8c8c8 0% 50%) 0 / 4px 4px;
+      font-weight: 700;
+    }
+
+    .desktop-icon {
+      width: 80px;
+      color: #fff;
+      text-align: center;
+      font-size: 11px;
+      cursor: pointer;
+      padding: 4px;
+      user-select: none;
+    }
+    .desktop-icon:hover { background: rgba(0,0,128,0.4); outline: 1px dotted #fff; }
+    .desktop-icon:focus { background: rgba(0,0,128,0.5); outline: 1px dotted #fff; }
+
+    .start-menu {
+      position: absolute;
+      bottom: 30px; left: 2px;
+      width: 200px;
+      z-index: 9999;
+      display: none;
+    }
+    .start-menu.open { display: block; }
+
+    .status-bar {
+      border-top: 1px solid var(--c-face-dark);
+      padding: 2px 4px;
+      font-size: 11px;
+      display: flex;
+      gap: 6px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    .status-cell {
+      border: 1px solid;
+      border-color: var(--c-face-dark) var(--c-face-light) var(--c-face-light) var(--c-face-dark);
+      padding: 1px 6px;
+      background: var(--c-face);
+    }
+
+    .proj-row { border-bottom: 1px solid var(--c-face-dark); }
+    .proj-row:last-child { border-bottom: 0; }
+
+    .link-blue { color: #0000aa; text-decoration: underline; }
+
+    ::-webkit-scrollbar { width: 16px; height: 16px; }
+    ::-webkit-scrollbar-track { background: #dfdfdf; }
+    ::-webkit-scrollbar-thumb {
+      background: var(--c-face);
+      border: 2px solid;
+      border-color: var(--c-face-light) var(--c-face-darker) var(--c-face-darker) var(--c-face-light);
+    }
+
+    /* SEO / accessibility: keep real content readable for crawlers */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ============ SEO H1 / descriptive content (visible, crawlers love it) ============ -->
+  <header class="sr-only">
+    <h1>Bruno — Laravel Developer & Software Engineer (brunots)</h1>
+    <p>
+      Bruno, also known as brunots, is a Software Engineer based in Brazil,
+      specialized in Laravel, PHP and async systems. This portfolio, inspired by Windows 98,
+      brings together his GitHub projects, his Laravel Senior certificate and the site brunots.dev.
+    </p>
+  </header>
+
+  <!-- ============ DESKTOP ============ -->
+  <main id="desktop" class="absolute inset-0 overflow-hidden" aria-label="Área de trabalho">
+
+    <!-- Desktop icons -->
+    <div class="absolute top-2 left-2 flex flex-col gap-2">
+      <a class="desktop-icon" href="https://brunots.dev/" target="_blank" rel="noopener" aria-label="Open brunots.dev">
+        <div style="font-size:32px">🌐</div>
+        <div>brunots.dev</div>
+      </a>
+      <div class="desktop-icon" tabindex="0" data-open="win-projects" role="button" aria-label="Open my projects">
+        <div style="font-size:32px">📁</div>
+        <div>My Projects</div>
+      </div>
+      <div class="desktop-icon" tabindex="0" data-open="win-about" role="button" aria-label="Open about me">
+        <div style="font-size:32px">👤</div>
+        <div>About Me</div>
+      </div>
+      <div class="desktop-icon" tabindex="0" data-open="win-cert" role="button" aria-label="Open Laravel certificate">
+        <div style="font-size:32px">🏅</div>
+        <div>Laravel Cert</div>
+      </div>
+    </div>
+
+    <!-- ============ WINDOW: About ============ -->
+    <section class="window bevel-out" id="win-about" style="left:10%; top:14%; width:380px; height:300px; z-index:13;" aria-label="About me">
+      <div class="title-bar">
+        <span style="margin-right:auto">👤 About Me — Properties</span>
+        <button class="win98-btn" data-act="min" aria-label="Minimize">_</button>
+        <button class="win98-btn" data-act="max" aria-label="Maximize">▢</button>
+        <button class="win98-btn" data-act="close" aria-label="Close">✕</button>
+      </div>
+      <div class="bevel-sunken" style="flex:1; margin:3px; overflow:auto; background:#fff; padding:10px; font-size:12px; line-height:1.5;">
+        <div style="display:flex; gap:10px; align-items:center;">
+          <img src="https://avatars.githubusercontent.com/u/1450085?v=4" alt="GitHub avatar of Bruno (brunots)" width="56" height="56" class="bevel-in" style="background:#fff;" />
+          <div>
+            <strong style="font-size:14px;">Bruno</strong><br>
+            <span class="link-blue">@brunots</span>
+          </div>
+        </div>
+        <hr class="bevel-in" style="border:0; height:2px; margin:8px 0;">
+        <p style="margin:4px 0;"><strong>Location:</strong> Brazil</p>
+        <p style="margin:4px 0;"><strong>Website:</strong> <a class="link-blue" href="https://brunots.dev/" target="_blank" rel="noopener">brunots.dev</a></p>
+        <p style="margin:4px 0;"><strong>GitHub:</strong> <a class="link-blue" href="https://github.com/brunots" target="_blank" rel="noopener">github.com/brunots</a></p>
+        <p style="margin:4px 0;"><strong>LinkedIn:</strong> <a class="link-blue" href="https://www.linkedin.com/in/brunotenorios/" target="_blank" rel="noopener">linkedin.com/in/brunotenorios</a></p>
+        <p style="margin:8px 0 0;">Software Engineer · Laravel, PHP and async systems specialist.</p>
+      </div>
+    </section>
+
+    <!-- ============ WINDOW: Projects ============ -->
+    <section class="window bevel-out" id="win-projects" style="left:37%; top:10%; width:380px; height:440px; z-index:12;" aria-label="My GitHub projects">
+      <div class="title-bar">
+        <span style="margin-right:auto">📁 My Projects — GitHub</span>
+        <button class="win98-btn" data-act="min" aria-label="Minimize">_</button>
+        <button class="win98-btn" data-act="max" aria-label="Maximize">▢</button>
+        <button class="win98-btn" data-act="close" aria-label="Close">✕</button>
+      </div>
+      <div style="padding:6px 9px; border-bottom:2px solid var(--c-face-dark); background:var(--c-face); color:#222;">
+        <strong style="font-size:13px;">GitHub Projects</strong>
+        <p style="margin:4px 0 0; font-size:11px; line-height:1.4;">Only a few projects are featured here. View the full list on <a class="link-blue" href="https://github.com/b7s" target="_blank" rel="noopener">GitHub</a>.</p>
+      </div>
+      <div class="bevel-sunken" style="flex:1; margin:3px; overflow:auto; background:#fff;">
+        <ul id="project-list" class="list-none m-0 p-0 text-[12px]"></ul>
+      </div>
+      <div class="status-bar">
+        <span class="status-cell" style="flex:1" id="proj-count">Loading…</span>
+        <span class="status-cell">GitHub API</span>
+      </div>
+    </section>
+
+    <!-- ============ WINDOW: Laravel Certificate ============ -->
+    <section class="window bevel-out" id="win-cert" style="left:64%; top:18%; width:360px; height:280px; z-index:11;" aria-label="Laravel Senior Certificate">
+      <div class="title-bar">
+        <span style="margin-right:auto">🏅 Laravel Senior Certificate</span>
+        <button class="win98-btn" data-act="min" aria-label="Minimize">_</button>
+        <button class="win98-btn" data-act="max" aria-label="Maximize">▢</button>
+        <button class="win98-btn" data-act="close" aria-label="Close">✕</button>
+      </div>
+      <div class="bevel-sunken" style="flex:1; margin:3px; overflow:auto; background:#fff; padding:10px; text-align:center; font-size:12px;">
+        <a href="https://verifier.certificationforlaravel.org/1c0b7ea2-89ac-4351-a58b-c399556e9839" target="_blank" rel="noopener" title="Verify Laravel Senior certificate">
+          <img src="https://brunots.dev/images/badge-laravel-senior.png" alt="Laravel Senior Certificate badge for Bruno (brunots)" width="140" class="bevel-in" style="background:#fff; margin-bottom:8px;" />
+        </a>
+        <p style="margin:4px 0;"><strong>Laravel Senior Certificate</strong></p>
+        <p style="margin:4px 0;">Issued to Bruno (brunots)</p>
+        <p style="margin:8px 0 0;"><a class="link-blue" href="https://verifier.certificationforlaravel.org/1c0b7ea2-89ac-4351-a58b-c399556e9839" target="_blank" rel="noopener">Verify authenticity →</a></p>
+      </div>
+    </section>
+
+    <!-- ============ START MENU ============ -->
+    <nav class="start-menu bevel-out" id="startMenu" aria-label="Start menu">
+      <div style="background:linear-gradient(180deg,#000080,#1084d0); color:#fff; padding:6px 8px; font-weight:700; font-size:13px;">
+        <span style="font-size:18px;">🪟</span> BrunoTS
+      </div>
+      <div class="p-1">
+        <a class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px; text-decoration:none; color:#000;" href="https://brunots.dev/" target="_blank" rel="noopener">🌐 brunots.dev</a>
+        <button class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px;" data-open="win-projects">📁 My Projects</button>
+        <button class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px;" data-open="win-about">👤 About Me</button>
+        <button class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px;" data-open="win-cert">🏅 Laravel Cert</button>
+        <hr class="bevel-in" style="border:0; height:2px; margin:4px 0;">
+        <a class="win98-btn" style="display:block; width:100%; text-align:left; text-decoration:none; color:#000;" href="https://github.com/brunots" target="_blank" rel="noopener">💻 GitHub</a>
+        <a class="win98-btn" style="display:block; width:100%; text-align:left; text-decoration:none; color:#000;" href="https://brunots.dev/" target="_blank" rel="noopener">🔗 brunots.dev</a>
+      </div>
+    </nav>
+  </main>
+
+  <!-- ============ TASKBAR ============ -->
+  <footer class="bevel-out" style="position:fixed; bottom:0; left:0; right:0; height:30px; display:flex; align-items:center; gap:4px; padding:2px 4px; z-index:10000;">
+    <button id="startBtn" class="win98-btn" style="font-weight:700; height:24px;">🪟 <u>S</u>tart</button>
+    <div style="width:2px; height:22px; background:var(--c-face-dark); margin:0 2px; box-shadow:1px 0 0 var(--c-face-light);"></div>
+    <div id="taskbar" class="flex gap-1 flex-1 overflow-hidden" style="height:24px;"></div>
+    <div id="clock" class="bevel-in" style="height:24px; padding:0 8px; display:flex; align-items:center; font-size:11px; min-width:64px; justify-content:center;">--:--</div>
+  </footer>
+
+  <script>
+    /* ===================== PROJECTS ARRAY (in order) ===================== */
+    const PROJECTS = [
+      { name: "fluentvox",              desc: "Unleash state-of-the-art Text-To-Speech and voice cloning in PHP applications", lang: "PHP", stars: 88, url: "https://github.com/b7s/fluentvox" },
+      { name: "fluentcut",              desc: "Craft and compose videos programmatically in PHP with an elegant fluent API", lang: "PHP", stars: 7, url: "https://github.com/b7s/fluentcut" },
+      { name: "fluentvision",           desc: "Fluent API package providing a unified interface to two object detection backends", lang: "PHP", stars: 5, url: "https://github.com/b7s/fluentvision" },
+      { name: "whisper-php",            desc: "A fluent state-of-the-art Speech-To-Text API for PHP/Laravel applications", lang: "PHP", stars: 24, url: "https://github.com/b7s/whisper-php" },
+      { name: "catraca",                desc: "PHP Quality Guardian enforcing the ratchet principle: quality can only improve, never regress", lang: "PHP", stars: 19, url: "https://github.com/b7s/catraca" },
+      { name: "zenith",                 desc: "Zenith — a Rust project by b7s",        lang: "Rust",       stars: 1,  url: "https://github.com/b7s/zenith" },
+      { name: "skill-laravel-statecraft", desc: "Laravel backend skill enforcing bounded contexts, state machines and job orchestration", lang: "Skill", stars: 1, url: "https://github.com/b7s/skill-laravel-statecraft" },
+      { name: "neuraphp",               desc: "Local AI embeddings for PHP — no APIs, no subscriptions, no external services", lang: "PHP", stars: 13, url: "https://github.com/b7s/neuraphp" }
+    ];
+
+    (function renderProjects() {
+      PROJECTS.sort((a, b) => b.stars - a.stars);
+      const ul = document.getElementById("project-list");
+      const frag = document.createDocumentFragment();
+      PROJECTS.forEach((p, i) => {
+        const li = document.createElement("li");
+        li.className = "proj-row";
+        li.style.padding = "6px 8px";
+        li.innerHTML =
+          '<div style="display:flex; justify-content:space-between; gap:8px;">' +
+            '<a class="link-blue" href="' + p.url + '" target="_blank" rel="noopener" style="font-weight:700;">' + (i + 1) + '. ' + p.name + '</a>' +
+            '<span style="white-space:nowrap; color:#555;">⭐ ' + p.stars + '</span>' +
+          '</div>' +
+          '<div style="color:#333; margin:2px 0;">' + p.desc + '</div>' +
+          '<div style="color:#0000aa; font-size:11px;">● ' + p.lang + '</div>';
+        frag.appendChild(li);
+      });
+      ul.appendChild(frag);
+      document.getElementById("proj-count").textContent = PROJECTS.length + " projects";
+    })();
+
+    /* ===================== WINDOW MANAGER ===================== */
+    let zTop = 100;
+    const windows = Array.from(document.querySelectorAll(".window"));
+    const taskbar = document.getElementById("taskbar");
+    const taskButtons = {};
+
+    function focusWindow(win) {
+      windows.forEach(w => w.querySelector(".title-bar").classList.add("inactive"));
+      win.style.zIndex = ++zTop;
+      win.querySelector(".title-bar").classList.remove("inactive");
+    }
+
+    function makeTaskButton(win) {
+      const title = win.querySelector(".title-bar span").textContent.trim();
+      const btn = document.createElement("button");
+      btn.className = "win98-btn taskbar-btn active";
+      btn.style.height = "24px";
+      btn.style.maxWidth = "160px";
+      btn.style.minWidth = "0";
+      btn.style.overflow = "hidden";
+      btn.style.whiteSpace = "nowrap";
+      btn.style.textOverflow = "ellipsis";
+      btn.style.flexShrink = "1";
+      btn.textContent = title;
+      btn.addEventListener("click", () => {
+        if (win.dataset.min === "1" || win.style.display === "none") {
+          showWindow(win.id);
+        } else {
+          win.style.display = "none";
+          win.dataset.min = "1";
+        }
+        syncTaskButtons();
+      });
+      taskButtons[win.id] = btn;
+      taskbar.appendChild(btn);
+    }
+
+    function syncTaskButtons() {
+      windows.forEach(w => {
+        const btn = taskButtons[w.id];
+        const hidden = w.style.display === "none" || w.dataset.min === "1";
+        btn.classList.toggle("active", !hidden && w.style.zIndex == zTop);
+      });
+    }
+
+    windows.forEach(win => {
+      makeTaskButton(win);
+
+      const bar = win.querySelector(".title-bar");
+      bar.addEventListener("mousedown", (e) => {
+        if (e.target.closest(".win98-btn")) return;
+        focusWindow(win);
+        const rect = win.getBoundingClientRect();
+        const offX = e.clientX - rect.left;
+        const offY = e.clientY - rect.top;
+        win.dataset.max = win.dataset.max || "0";
+
+        function move(ev) {
+          let x = ev.clientX - offX;
+          let y = ev.clientY - offY;
+          x = Math.max(0, Math.min(x, window.innerWidth - 40));
+          y = Math.max(0, Math.min(y, window.innerHeight - 60));
+          win.style.left = x + "px";
+          win.style.top = y + "px";
+        }
+        function up() {
+          document.removeEventListener("mousemove", move);
+          document.removeEventListener("mouseup", up);
+        }
+        document.addEventListener("mousemove", move);
+        document.addEventListener("mouseup", up);
+      });
+
+      win.querySelectorAll(".win98-btn").forEach(b => {
+        b.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const act = b.dataset.act;
+          if (act === "close") { win.style.display = "none"; win.dataset.min = "1"; }
+          else if (act === "min") { win.style.display = "none"; win.dataset.min = "1"; }
+          else if (act === "max") {
+            if (win.dataset.max === "1") {
+              win.dataset.max = "0";
+              win.style.left = win.dataset.ol; win.style.top = win.dataset.ot;
+              win.style.width = win.dataset.ow; win.style.height = win.dataset.oh;
+            } else {
+              win.dataset.ol = win.style.left; win.dataset.ot = win.style.top;
+              win.dataset.ow = win.style.width; win.dataset.oh = win.style.height;
+              win.dataset.max = "1";
+              win.style.left = "0px"; win.style.top = "0px";
+              win.style.width = "100%"; win.style.height = "calc(100% - 30px)";
+            }
+          }
+          syncTaskButtons();
+        });
+      });
+
+      win.addEventListener("pointerdown", () => focusWindow(win));
+
+      focusWindow(win);
+    });
+
+      // Bring to front in the requested order: Laravel Cert (back) → My Projects (middle) → About Me (front)
+      focusWindow(document.getElementById("win-cert"));
+      focusWindow(document.getElementById("win-projects"));
+      focusWindow(document.getElementById("win-about"));
+
+    /* ===================== RESPONSIVE / MOBILE LAYOUT ===================== */
+    function setWin(id, l, t, w, h) {
+      const el = document.getElementById(id);
+      el.style.left = l; el.style.top = t; el.style.width = w; el.style.height = h;
+    }
+    function layoutForViewport() {
+      if (window.innerWidth <= 640) {
+        // Mobile: About Me on top, Projects below, Laravel minimized (full-width stack)
+        setWin("win-about", "0px", "0px", "100%", "46%");
+        setWin("win-projects", "0px", "46%", "100%", "54%");
+        const cert = document.getElementById("win-cert");
+        cert.style.display = "none"; cert.dataset.min = "1";
+      } else {
+        // Desktop: centered group
+        setWin("win-about", "10%", "14%", "380px", "300px");
+        setWin("win-projects", "37%", "10%", "380px", "440px");
+        const cert = document.getElementById("win-cert");
+        cert.style.display = "flex"; cert.dataset.min = "0";
+      }
+      syncTaskButtons();
+    }
+    layoutForViewport();
+    window.addEventListener("resize", layoutForViewport);
+
+    /* ===================== DESKTOP ICONS / START MENU ===================== */
+    function showWindow(id) {
+      const win = document.getElementById(id);
+      win.style.display = "flex";
+      win.dataset.min = "0";
+      if (window.innerWidth <= 640 && id === "win-cert") {
+        // On mobile, keep the original size but center it so it is not cut off
+        const w = 360, h = 280;
+        win.style.width = w + "px";
+        win.style.height = h + "px";
+        win.style.left = Math.max(0, (window.innerWidth - w) / 2) + "px";
+        win.style.top = Math.max(0, (window.innerHeight - h - 30) / 2) + "px";
+      }
+      focusWindow(win);
+      syncTaskButtons();
+    }
+
+    function openWin(id) {
+      showWindow(id);
+    }
+
+    document.querySelectorAll("[data-open]").forEach(el => {
+      const id = el.dataset.open;
+      el.addEventListener("click", () => openWin(id));
+      el.addEventListener("dblclick", () => openWin(id));
+      el.addEventListener("keydown", (e) => { if (e.key === "Enter") openWin(id); });
+    });
+
+    const startMenu = document.getElementById("startMenu");
+    const startBtn = document.getElementById("startBtn");
+    startBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      startMenu.classList.toggle("open");
+    });
+    document.addEventListener("click", () => startMenu.classList.remove("open"));
+    startMenu.addEventListener("click", (e) => e.stopPropagation());
+
+    /* ===================== CLOCK ===================== */
+    function tick() {
+      const d = new Date();
+      const h = String(d.getHours()).padStart(2, "0");
+      const m = String(d.getMinutes()).padStart(2, "0");
+      document.getElementById("clock").textContent = h + ":" + m;
+    }
+    /* ===================== BLOCK RIGHT-CLICK ===================== */
+    document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+    tick(); setInterval(tick, 1000);
+  </script>
+</body>
+</html>
