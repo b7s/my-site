@@ -1,4 +1,4 @@
-<h1 style="text-align:center" align="center">
+﻿<h1 style="text-align:center" align="center">
     <img src="images/favicon.webp" width="96px" height="96px">
     <p>BrunoTS.dev</p>
 </h1>
