@@ -83,21 +83,10 @@
   }
   </script>
 
+  <link rel="stylesheet" href="assets/styles/win98.css" />
   <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 
   <style>
-    :root {
-      --c-face: #c0c0c0;
-      --c-face-light: #ffffff;
-      --c-face-dark: #808080;
-      --c-face-darker: #000000;
-      --c-desktop: #008080;
-      --c-title: #000080;
-      --c-title-grad: #1084d0;
-    }
-
-    * { box-sizing: border-box; }
-
     html, body {
       margin: 0;
       height: 100%;
@@ -117,55 +106,6 @@
       -webkit-user-select: text !important;
     }
 
-    /* Win98 bevels */
-    .bevel-out {
-      border: 2px solid;
-      border-color: var(--c-face-light) var(--c-face-darker) var(--c-face-darker) var(--c-face-light);
-      box-shadow: inset 1px 1px 0 var(--c-face), inset -1px -1px 0 var(--c-face-dark);
-      background: var(--c-face);
-    }
-    .bevel-in {
-      border: 2px solid;
-      border-color: var(--c-face-dark) var(--c-face-light) var(--c-face-light) var(--c-face-dark);
-      background: var(--c-face);
-    }
-    .bevel-sunken {
-      border: 2px solid;
-      border-color: var(--c-face-dark) var(--c-face-light) var(--c-face-light) var(--c-face-dark);
-      background: #fff;
-    }
-
-    .win98-btn {
-      min-width: 18px;
-      padding: 6px;
-      font-size: 11px;
-      line-height: 1;
-      cursor: pointer;
-      user-select: none;
-      border: 2px solid;
-      border-color: var(--c-face-light) var(--c-face-darker) var(--c-face-darker) var(--c-face-light);
-      background: var(--c-face);
-    }
-    .win98-btn:active {
-      border-color: var(--c-face-darker) var(--c-face-light) var(--c-face-light) var(--c-face-darker);
-      padding: 2px 5px 0 7px;
-    }
-    .win98-btn:disabled,
-    .win98-btn[disabled],
-    .win98-btn.disabled {
-      cursor: default !important;
-      color: var(--c-face-dark) !important;
-      text-shadow: 1px 1px 0 var(--c-face-light) !important;
-      border-color: var(--c-face-dark) var(--c-face-light) var(--c-face-light) var(--c-face-dark) !important;
-      background: var(--c-face) !important;
-      pointer-events: none;
-    }
-    .win98-btn:disabled:active,
-    .win98-btn[disabled]:active,
-    .win98-btn.disabled:active {
-      padding: 6px !important;
-      border-color: var(--c-face-dark) var(--c-face-light) var(--c-face-light) var(--c-face-dark) !important;
-    }
     
     .title-bar {
       background: linear-gradient(90deg, var(--c-title), var(--c-title-grad));

@@ -4,10 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Minefield</title>
+<link rel="stylesheet" href="assets/styles/win98.css" />
 <style>
-  /* ===== Minefield (Win98-styled) — pure CSS ===== */
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
+  :root {
+    --c-face-darker: #0a0a0a;
+  }
+  * { margin: 0; padding: 0; }
   html { overflow: auto; }
   body {
     min-width: 100%;
@@ -18,56 +20,21 @@
     user-select: none;
     color: #000;
   }
-
-  /* Win98 bevels */
   .bevel-out {
-    border: 2px solid;
-    border-color: #ffffff #0a0a0a #0a0a0a #ffffff;
     box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
-    background: #c0c0c0;
   }
   .bevel-in {
-    border: 2px solid;
-    border-color: #808080 #ffffff #ffffff #808080;
     box-shadow: inset 1px 1px 0 #0a0a0a, inset -1px -1px 0 #dfdfdf;
-    background: #c0c0c0;
   }
   .bevel-sunken {
-    border: 2px solid;
-    border-color: #808080 #ffffff #ffffff #808080;
     background: #c0c0c0;
   }
   .win98-btn {
-    min-width: 18px;
-    padding: 6px;
-    font-size: 11px;
-    line-height: 1;
-    cursor: pointer;
-    user-select: none;
-    border: 2px solid;
-    border-color: #ffffff #0a0a0a #0a0a0a #ffffff;
     box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
-    background: #c0c0c0;
-  }
-  .win98-btn:active {
-    border-color: #0a0a0a #ffffff #ffffff #0a0a0a;
-    padding: 2px 5px 0 7px;
   }
   .win98-btn:disabled,
   .win98-btn[disabled],
   .win98-btn.disabled {
-    color: #808080 !important;
-    cursor: default !important;
-    text-shadow: 1px 1px 0 #ffffff !important;
-    border-color: #808080 #ffffff #ffffff #808080 !important;
-    box-shadow: inset -1px -1px 0 #dfdfdf, inset 1px 1px 0 #0a0a0a !important;
-    pointer-events: none;
-  }
-  .win98-btn:disabled:active,
-  .win98-btn[disabled]:active,
-  .win98-btn.disabled:active {
-    padding: 6px !important;
-    border-color: #808080 #ffffff #ffffff #808080 !important;
     box-shadow: inset -1px -1px 0 #dfdfdf, inset 1px 1px 0 #0a0a0a !important;
   }
 
