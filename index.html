@@ -139,7 +139,7 @@
     /* While the user drags the title bar, free the iframe from pointer events
        so its contents (e.g. Minefield board) don't cause expensive repaints. */
     .window.dragging iframe { pointer-events: none; }
-    .window.dragging { will-change: transform; }
+    .window.dragging { will-change: transform; touch-action: none; }
     /* Promote heavy iframes (boards / players) to their own GPU layer
        so the browser can cache them as a bitmap during window drag. */
     iframe { background: transparent; }
@@ -914,6 +914,23 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
         const rect = win.getBoundingClientRect();
         const offX = e.clientX - rect.left;
         const offY = e.clientY - rect.top;
+        startDrag(offX, offY);
+      });
+
+      bar.addEventListener("touchstart", (e) => {
+        if (e.target.closest(".win98-btn")) return;
+        if (e.touches.length !== 1) return;
+        e.preventDefault();
+        focusWindow(win);
+        const rect = win.getBoundingClientRect();
+        const t = e.touches[0];
+        const offX = t.clientX - rect.left;
+        const offY = t.clientY - rect.top;
+        startDrag(offX, offY);
+      });
+
+      function startDrag(offX, offY) {
+        const rect = win.getBoundingClientRect();
         win.dataset.max = win.dataset.max || "0";
 
         // Switch the window to GPU-composited motion.
@@ -924,8 +941,10 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
         win.classList.add("dragging");
 
         function move(ev) {
-          let x = ev.clientX - offX;
-          let y = ev.clientY - offY;
+          const cx = ev.touches ? ev.touches[0].clientX : ev.clientX;
+          const cy = ev.touches ? ev.touches[0].clientY : ev.clientY;
+          let x = cx - offX;
+          let y = cy - offY;
           x = Math.max(0, Math.min(x, window.innerWidth - 40));
           y = Math.max(0, Math.min(y, window.innerHeight - 60));
           // transform-only motion while the user is holding the title bar
@@ -945,10 +964,14 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
           win.classList.remove("dragging");
           document.removeEventListener("mousemove", move);
           document.removeEventListener("mouseup", up);
+          document.removeEventListener("touchmove", move);
+          document.removeEventListener("touchend", up);
         }
         document.addEventListener("mousemove", move);
         document.addEventListener("mouseup", up);
-      });
+        document.addEventListener("touchmove", move, {passive: true});
+        document.addEventListener("touchend", up, {passive: true});
+      }
 
       win.querySelectorAll(".win98-btn").forEach(b => {
         b.addEventListener("click", (e) => {
