@@ -127,6 +127,9 @@
   const lines = [];
   let buffer = "";
   let bsodActive = false;
+  const history = [];
+  let historyIdx = -1;
+  const MAX_HISTORY = 16;
   // dir /p pager
   let pagerActive = false;
   let pagerQueue = [];
@@ -671,6 +674,11 @@
     const cmd = buffer;
     buffer = "";
     if (cmd.trim()) {
+      if (history.length === 0 || history[history.length - 1] !== cmd.trim()) {
+        history.push(cmd.trim());
+        if (history.length > MAX_HISTORY) history.shift();
+      }
+      historyIdx = history.length;
       print(`${cwd}>${cmd}`);
     } else {
       print(`${cwd}>`);
@@ -722,6 +730,21 @@
     } else if (e.key === "Escape") {
       e.preventDefault();
       buffer = "";
+      historyIdx = history.length;
+      render();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (history.length > 0) {
+        if (historyIdx > 0) historyIdx--;
+        buffer = history[historyIdx];
+      }
+      render();
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (historyIdx < history.length) {
+        historyIdx++;
+        buffer = historyIdx < history.length ? history[historyIdx] : "";
+      }
       render();
     } else if (e.key === "Tab") {
       e.preventDefault();

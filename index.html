@@ -1106,7 +1106,7 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
         // Lazy-load the Terminal iframe only on first open
         const ifr = document.getElementById("terminal-iframe");
         if (ifr && ifr.dataset.loaded !== "1") {
-          ifr.src = "terminal.html";
+          ifr.src = "terminal.html?_=1";
           ifr.dataset.loaded = "1";
           // Auto-focus after first load
           ifr.addEventListener("load", function onLoad() {
