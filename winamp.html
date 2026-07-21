@@ -705,6 +705,8 @@ function onHostMessage(e) {
   if (e.data.type === "winamp-toggle-playlist") {
     const hidden = $plWrap.classList.toggle("hidden");
     parent.postMessage({type:"winamp-playlist-state", hidden}, "*");
+  } else if (e.data.type === "winamp-stop") {
+    stop();
   } else if (e.data.type === "winamp-shutdown") {
     shutdown();
   }
@@ -834,8 +836,7 @@ loadCurrent();   // preload first track metadata (does not autoplay)
 $info.textContent = "Music Play — stopped";
 applyGain();
 
-/* Block the browser's right-click menu inside the player iframe. */
-document.addEventListener("contextmenu", (e) => e.preventDefault());
+//document.addEventListener("contextmenu", (e) => e.preventDefault());
 </script>
 </body>
 </html>

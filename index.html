@@ -422,6 +422,8 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
   </div>
 
   <!-- ============ BOOT SCREEN (BIOS POST + BunOS loading, triggered after BSOD) ============ -->
+  <audio id="boot-audio" preload="auto" src="assets/sounds/bios-post.mp3"></audio>
+  <audio id="welcome-audio" preload="auto" src="assets/sounds/welcome.mp3"></audio>
   <div id="boot-screen" tabindex="-1">
     <div id="boot-phase1" class="visible">
       <div id="boot-phase1-inner">
@@ -1173,6 +1175,30 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
         if (ifr) ifr.blur();
         bsod.focus();
 
+        /* Stop all audio on the page */
+        document.querySelectorAll("audio").forEach(a => { a.pause(); a.currentTime = 0; });
+        /* Stop the music player iframe */
+        const winampIfr = document.getElementById("winamp-iframe");
+        if (winampIfr && winampIfr.contentWindow) {
+          winampIfr.contentWindow.postMessage({type:"winamp-stop"}, "*");
+        }
+
+        /* Play error beep using Web Audio API */
+        try {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          const ctx = new AC();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "square";
+          osc.frequency.value = 880;
+          gain.gain.value = 0.08;
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.2);
+          osc.onended = () => { try { ctx.close(); } catch(_) {} };
+        } catch(_) {}
+
         /* Boot generation counter — increments each time to cancel stale callbacks */
         if (typeof window._bootGen === "undefined") window._bootGen = 0;
         window._bootGen++;
@@ -1212,7 +1238,13 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
           boot.classList.add("visible");
           phase1.classList.add("visible");
 
+          /* Play BIOS POST sound */
+          const bootAudio = document.getElementById("boot-audio");
+          if (bootAudio) { bootAudio.currentTime = 0; bootAudio.play(); }
+
           /* ---- Phase 1: BIOS POST ---- */
+          const postStart = Date.now();
+          const POST_DURATION = 8000; /* 8 seconds to match audio */
           const postLines = [
             "BunOS BIOS Version 1.0",
             "Copyright (C) BunOS 1998",
@@ -1233,7 +1265,8 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
           function typePOST() {
             if (gen !== window._bootGen) return;
             if (pi >= postLines.length) {
-              setTimeout(() => { if (gen === window._bootGen) startLoading(); }, 200);
+              const remaining = Math.max(0, POST_DURATION - (Date.now() - postStart));
+              setTimeout(() => { if (gen === window._bootGen) startLoading(); }, remaining);
               return;
             }
             if (pi === 4) {
@@ -1245,8 +1278,8 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
                 if (mem > 65536) mem = 65536;
                 postLines[4] = "Memory   : Testing...               " + String(mem).padStart(7) + "K OK";
                 postText.textContent = postLines.slice(0, pi + 1).join("\n");
-                if (mem >= 65536) { clearInterval(memTimer); pi++; setTimeout(typePOST, 150); }
-              }, 15);
+                if (mem >= 65536) { clearInterval(memTimer); pi++; setTimeout(typePOST, 80); }
+              }, 85);
               postText.textContent = postLines.slice(0, pi + 1).join("\n");
               return;
             }
@@ -1292,6 +1325,9 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
               if (pct >= 100) {
                 bar.style.width = "100%";
                 document.getElementById("boot-subtext").textContent = "Welcome to BunOS!";
+                /* Play welcome audio */
+                const welcomeAudio = document.getElementById("welcome-audio");
+                if (welcomeAudio) { welcomeAudio.currentTime = 0; welcomeAudio.play(); }
                 /* Fade out */
                 setTimeout(() => {
                   boot.classList.add("fade-out");
