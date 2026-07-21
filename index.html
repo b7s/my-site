@@ -144,6 +144,137 @@
        so the browser can cache them as a bitmap during window drag. */
     iframe { background: transparent; }
 
+    /* BSOD overlay — full desktop, shown when Terminal triggers a fatal exception */
+    #bsod {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #0000aa;
+      z-index: 100000;
+      padding: 10% 8% 4%;
+      font-family: "Courier New", "Lucida Console", "Liberation Mono", monospace;
+      font-size: 16px;
+      line-height: 1.3;
+      color: #fff;
+      cursor: default;
+      user-select: none;
+      -webkit-font-smoothing: none;
+      -moz-osx-font-smoothing: unset;
+    }
+    #bsod.visible { display: block; }
+    #bsod:focus { outline: none; }
+    @keyframes bsodBlink { 50% { opacity: 0; } }
+    #bsod-cur {
+      display: inline-block;
+      animation: bsodBlink 1s step-end infinite;
+    }
+    @media (max-width: 640px) {
+      #bsod { padding: 6% 4% 3%; font-size: 13px; }
+    }
+
+    /* Boot screen overlay (BIOS POST + BunOS loading) */
+    #boot-screen {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #000;
+      z-index: 100001;
+      cursor: default;
+      user-select: none;
+      font-family: "Courier New", "Lucida Console", "Liberation Mono", monospace;
+      -webkit-font-smoothing: none;
+      -moz-osx-font-smoothing: unset;
+    }
+    #boot-screen.visible { display: block; }
+
+    #boot-phase1 {
+      display: none;
+      padding: 3% 5%;
+      position: relative;
+    }
+    #boot-phase1.visible { display: flex; flex-direction: column; align-items: center; }
+    #boot-phase1-inner {
+      width: 100%;
+      max-width: 1024px;
+      font-family: serif;
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 24px;
+    }
+    #boot-phase1 .synergy {
+      width: 220px;
+      height: auto;
+      flex-shrink: 0;
+      image-rendering: auto;
+    }
+    #boot-post-text {
+      margin: 0;
+      font: inherit;
+      color: #c0c0c0;
+      flex: 1;
+      background: transparent;
+      white-space: pre-wrap;
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    #boot-phase2 {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      background: #000;
+    }
+    #boot-phase2.visible { display: flex; }
+    #boot-logo {
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #boot-logo img {
+      display: block;
+      width: 96px;
+      height: 96px;
+    }
+    #boot-subtext {
+      font-size: 14px;
+      color: #808080;
+      margin-bottom: 20px;
+    }
+    #boot-progress-track {
+      width: 240px;
+      height: 16px;
+      background: #000;
+      border: 2px solid #808080;
+      border-color: #fff #808080 #808080 #fff;
+      padding: 1px;
+    }
+    #boot-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: repeating-conic-gradient(#0000aa 0% 25%, #0000cc 0% 50%) 0 / 4px 4px;
+      transition: width 0.3s linear;
+    }
+
+    #boot-screen.fade-out {
+      opacity: 0;
+      transition: opacity 0.3s ease-out;
+    }
+
+    @media (max-width: 640px) {
+      #boot-logo { margin-bottom: 20px; }
+      #boot-logo img { width: 48px; height: 48px; }
+      #boot-phase1 { padding: 4% 3%; font-size: 12px; }
+      #boot-phase1 .synergy { width: 120px; margin-bottom: 16px; }
+      #boot-progress-track { width: 160px; height: 14px; }
+      #boot-phase1 { padding: 4% 3%; font-size: 12px; }
+    }
+
     .taskbar-btn.active {
       border-color: var(--c-face-darker) var(--c-face-light) var(--c-face-light) var(--c-face-darker);
       background: repeating-conic-gradient(#bdbdbd 0% 25%, #c8c8c8 0% 50%) 0 / 4px 4px;
@@ -271,6 +402,42 @@
 </head>
 
 <body>
+  <!-- ============ BSOD OVERLAY (full desktop, triggered by Terminal fatal exception) ============ -->
+  <div id="bsod" tabindex="-1"><pre id="bsod-text" style="margin:0; font:inherit; color:inherit; background:transparent; white-space:pre-wrap; word-break:break-all;">
+BunOS
+
+
+A fatal exception 0E has occurred at 0028:C0011E36
+in VXD VMM(01) + 00000E36. The current application
+will be terminated.
+
+*  Press any key to terminate the current application.
+*  Press CTRL+ALT+DEL again to restart your computer.
+   You will lose any unsaved information in all
+   applications.
+
+
+
+Press any key to continue <span id="bsod-cur">_</span></pre>
+  </div>
+
+  <!-- ============ BOOT SCREEN (BIOS POST + BunOS loading, triggered after BSOD) ============ -->
+  <div id="boot-screen" tabindex="-1">
+    <div id="boot-phase1" class="visible">
+      <div id="boot-phase1-inner">
+        <pre id="boot-post-text"></pre>
+        <img class="synergy" src="assets/images/synergy.webp" alt="" width="512" height="341">
+      </div>
+    </div>
+    <div id="boot-phase2">
+      <div id="boot-logo">
+          <img src="assets/images/favicon.webp" alt="BunOS" width="96" height="96">
+      </div>
+      <div id="boot-subtext">Starting BunOS...</div>
+      <div id="boot-progress-track"><div id="boot-progress-bar"></div></div>
+    </div>
+  </div>
+
   <!-- ============ SEO H1 / descriptive content (visible, crawlers love it) ============ -->
   <header class="sr-only">
     <h1>Bruno — Laravel Developer & Software Engineer (brunots)</h1>
@@ -313,6 +480,10 @@
       <div class="desktop-icon" tabindex="0" data-open="win-minefield" role="button" aria-label="Open Minefield">
         <div><svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" shape-rendering="crispEdges"><rect x="3" y="3" width="10" height="10" fill="#c0c0c0" stroke="#fff" stroke-width="2" stroke-linejoin="bevel"/><rect x="3" y="13" width="10" height="10" fill="#c0c0c0" stroke="#fff" stroke-width="2" stroke-linejoin="bevel"/><rect x="13" y="3" width="10" height="10" fill="#c0c0c0" stroke="#fff" stroke-width="2" stroke-linejoin="bevel"/><circle cx="22" cy="18" r="6" fill="#000"/><path d="M22 6v6m-3-3h6M11 28h12" stroke="#000" stroke-width="2" stroke-linecap="square" fill="none"/></svg></div>
         <div>Minefield</div>
+      </div>
+      <div class="desktop-icon" tabindex="0" data-open="win-terminal" role="button" aria-label="Open Terminal">
+        <div><svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" shape-rendering="crispEdges"><rect x="3" y="2" width="26" height="20" fill="#000" stroke="#fff" stroke-width="1.5" stroke-linejoin="bevel"/><rect x="5" y="4" width="22" height="10" fill="#000"/><text x="6" y="11" fill="#c0c0c0" font-size="6" font-family="Courier New,monospace" font-weight="bold">C:\&gt;</text><rect x="4" y="16" width="24" height="4" fill="#808080" stroke="#fff" stroke-width="0.5"/><rect x="6" y="17" width="4" height="2" fill="#000"/><rect x="12" y="17" width="4" height="2" fill="#000"/><rect x="18" y="17" width="4" height="2" fill="#000"/><rect x="9" y="22" width="14" height="3" fill="#c0c0c0" stroke="#fff" stroke-width="0.5"/><rect x="14" y="23" width="4" height="1" fill="#808080"/><rect x="8" y="25" width="16" height="4" fill="#808080" stroke="#fff" stroke-width="0.5"/><rect x="2" y="26" width="3" height="2" fill="#000"/><rect x="27" y="26" width="3" height="2" fill="#000"/></svg></div>
+        <div>Terminal</div>
       </div>
     </div>
 
@@ -428,6 +599,34 @@
       </div>
     </section>
 
+    <!-- ============ WINDOW: Terminal (iframe loaded lazily on first open) ============ -->
+    <section class="window bevel-out" id="win-terminal" style="left:24%; top:10%; width:560px; height:360px; z-index:8; display:none;" aria-label="Terminal">
+      <div class="title-bar">
+        <span style="margin-right:auto; display:flex; align-items:center; gap:5px;">
+          <svg width="14" height="14" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex:0 0 auto;" shape-rendering="crispEdges">
+            <rect x="3" y="2" width="26" height="20" fill="#000" stroke="#fff" stroke-width="1.2" stroke-linejoin="bevel"/>
+            <text x="6" y="11" fill="#c0c0c0" font-size="6" font-family="Courier New,monospace" font-weight="bold">C:\&gt;</text>
+            <rect x="9" y="22" width="14" height="3" fill="#c0c0c0" stroke="#fff" stroke-width="0.5"/>
+            <rect x="2" y="26" width="3" height="2" fill="#000"/>
+            <rect x="27" y="26" width="3" height="2" fill="#000"/>
+          </svg>
+          Terminal
+        </span>
+        <button class="win98-btn" data-act="min" aria-label="Minimize">_</button>
+        <button class="win98-btn" data-act="max" aria-label="Maximize">▢</button>
+        <button class="win98-btn" data-act="close" aria-label="Close">✕</button>
+      </div>
+      <div class="bevel-sunken" style="flex:1; margin:3px; overflow:hidden; background:#000; padding:0; display:flex; align-items:stretch; justify-content:flex-start;">
+        <iframe id="terminal-iframe"
+                src="about:blank"
+                width="100%"
+                height="100%"
+                style="border:0; display:block; background:#000; flex:1 1 auto; min-width:100%; min-height:100%;"
+                title="Terminal"
+                loading="lazy"></iframe>
+      </div>
+    </section>
+
     <!-- ============ START MENU ============ -->
     <nav class="start-menu bevel-out" id="startMenu" aria-label="Start menu">
       <div class="start-menu-title">BrunoTS</div>
@@ -461,6 +660,16 @@
                 <path d="M21 5v5m-2.5-2.5h5" stroke="#000" stroke-width="1.2" fill="none"/>
               </svg>
               Minefield
+            </span>
+          </button>
+          <button class="win98-btn" role="menuitem" data-open="win-terminal" style="display:block; width:100%; text-align:left; margin-bottom:2px; color:#000;">
+            <span style="display:inline-flex; align-items:center; gap:6px;">
+              <svg width="12" height="12" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" shape-rendering="crispEdges">
+                <rect x="3" y="2" width="26" height="20" fill="#000" stroke="#000" stroke-width="1.2" stroke-linejoin="bevel"/>
+                <text x="6" y="11" fill="#c0c0c0" font-size="6" font-family="Courier New,monospace" font-weight="bold">C:\&gt;</text>
+                <rect x="9" y="22" width="14" height="3" fill="#c0c0c0" stroke="#000" stroke-width="0.5"/>
+              </svg>
+              Terminal
             </span>
           </button>
         </div>
@@ -728,6 +937,15 @@
                   ifr.dataset.loaded = "";
                 }, 60);
               }
+            } else if (win.id === "win-terminal") {
+              const ifr = document.getElementById("terminal-iframe");
+              if (ifr.dataset.loaded === "1" && ifr.contentWindow) {
+                ifr.contentWindow.postMessage({type:"terminal-shutdown"}, "*");
+                setTimeout(() => {
+                  ifr.src = "about:blank";
+                  ifr.dataset.loaded = "";
+                }, 60);
+              }
             }
             win.style.display = "none";
             win.dataset.min = "1";
@@ -815,6 +1033,22 @@
           ifr.dataset.loaded = "1";
         }
       }
+      if (id === "win-terminal") {
+        // Lazy-load the Terminal iframe only on first open
+        const ifr = document.getElementById("terminal-iframe");
+        if (ifr && ifr.dataset.loaded !== "1") {
+          ifr.src = "terminal.html";
+          ifr.dataset.loaded = "1";
+          // Auto-focus after first load
+          ifr.addEventListener("load", function onLoad() {
+            ifr.removeEventListener("load", onLoad);
+            try { ifr.contentWindow.focus(); } catch(_) {}
+          });
+        } else if (ifr) {
+          // Already loaded — focus immediately on re-open
+          try { ifr.contentWindow.focus(); } catch(_) {}
+        }
+      }
       // Re-create the taskbar entry if this window was previously closed/minimized
       ensureTaskButton(win);
       focusWindow(win);
@@ -890,30 +1124,204 @@
       });
     });
 
-    /* ===================== MINEFIELD → HOST RESIZE ===================== */
-    // The Minefield iframe asks us to resize the window to fit the board.
-    // On desktop we grow the window (clamped to the viewport). On mobile we
-    // keep a compact window and let the iframe scroll instead.
+    /* ===================== IFRAME → HOST MESSAGES (resize, exit) ===================== */
     window.addEventListener("message", (e) => {
-      if (!e.data || e.data.type !== "minefield-resize") return;
-      const win = document.getElementById("win-minefield");
-      if (!win || win.style.display === "none") return;
-      const isMobile = window.innerWidth <= 640;
-      const TASKBAR = 30, MARGIN = 6, TITLE = 18;
+      if (!e.data) return;
 
-      let w, h;
-      if (isMobile) {
-        // Compact fixed window; iframe scrolls for larger boards.
-        w = Math.min(280, window.innerWidth - MARGIN * 2);
-        h = Math.min(360, window.innerHeight - TASKBAR - MARGIN * 2);
-      } else {
-        // Desktop: grow the window to fit. Add buffers so the iframe never
-        // tips into internal scrolling (window chrome + footer + paddings).
-        w = Math.min(e.data.width + 50, window.innerWidth - MARGIN * 2);
-        h = Math.min(e.data.height + 60, window.innerHeight - TASKBAR - MARGIN * 2);
+      if (e.data.type === "minefield-resize") {
+        const win = document.getElementById("win-minefield");
+        if (!win || win.style.display === "none") return;
+        const isMobile = window.innerWidth <= 640;
+        const TASKBAR = 30, MARGIN = 6, TITLE = 18;
+
+        let w, h;
+        if (isMobile) {
+          w = Math.min(280, window.innerWidth - MARGIN * 2);
+          h = Math.min(360, window.innerHeight - TASKBAR - MARGIN * 2);
+        } else {
+          w = Math.min(e.data.width + 50, window.innerWidth - MARGIN * 2);
+          h = Math.min(e.data.height + 60, window.innerHeight - TASKBAR - MARGIN * 2);
+        }
+        win.style.width  = Math.max(200, w) + "px";
+        win.style.height = Math.max(220, h) + "px";
+        return;
       }
-      win.style.width  = Math.max(200, w) + "px";
-      win.style.height = Math.max(220, h) + "px";
+
+      if (e.data.type === "terminal-resize") {
+        const win = document.getElementById("win-terminal");
+        if (!win || win.style.display === "none") return;
+        const isMobile = window.innerWidth <= 640;
+        const TASKBAR = 30, MARGIN = 6;
+
+        let w, h;
+        if (isMobile) {
+          w = Math.min(300, window.innerWidth - MARGIN * 2);
+          h = Math.min(360, window.innerHeight - TASKBAR - MARGIN * 2);
+        } else {
+          w = Math.min(e.data.width + 50, window.innerWidth - MARGIN * 2);
+          h = Math.min(e.data.height + 60, window.innerHeight - TASKBAR - MARGIN * 2);
+        }
+        win.style.width  = Math.max(400, w) + "px";
+        win.style.height = Math.max(220, h) + "px";
+        return;
+      }
+
+      if (e.data.type === "terminal-bsod-show") {
+        const bsod = document.getElementById("bsod");
+        bsod.classList.add("visible");
+        const ifr = document.getElementById("terminal-iframe");
+        if (ifr) ifr.blur();
+        bsod.focus();
+
+        /* Boot generation counter — increments each time to cancel stale callbacks */
+        if (typeof window._bootGen === "undefined") window._bootGen = 0;
+        window._bootGen++;
+
+        function startBootSequence() {
+          const gen = window._bootGen;
+          bsod.classList.remove("visible");
+          document.removeEventListener("keydown", onBootKey);
+          bsod.removeEventListener("click", onBootClick);
+
+          const boot = document.getElementById("boot-screen");
+          const phase1 = document.getElementById("boot-phase1");
+          const phase2 = document.getElementById("boot-phase2");
+          const postText = document.getElementById("boot-post-text");
+          const bar = document.getElementById("boot-progress-bar");
+          const subtext = document.getElementById("boot-subtext");
+
+          /* Reset all boot screen state */
+          phase2.classList.remove("visible");
+          boot.classList.remove("visible", "fade-out");
+          postText.textContent = "";
+          bar.style.width = "0%";
+          subtext.textContent = "Starting BunOS...";
+
+          /* Close the terminal window first */
+          const win = document.getElementById("win-terminal");
+          if (win) {
+            const closeBtn = win.querySelector('[data-act="close"]');
+            if (closeBtn) closeBtn.click();
+          }
+
+          /* Tell the terminal BSOD is dismissed */
+          if (ifr && ifr.contentWindow) {
+            ifr.contentWindow.postMessage({type:"terminal-bsod-dismissed"}, "*");
+          }
+
+          boot.classList.add("visible");
+          phase1.classList.add("visible");
+
+          /* ---- Phase 1: BIOS POST ---- */
+          const postLines = [
+            "BunOS BIOS Version 1.0",
+            "Copyright (C) BunOS 1998",
+            "",
+            "CPU      : BunOS Virtual x86 Processor @ 233MHz",
+            "Memory   : Testing...                       0K OK",
+            "IDE CH-0 : BunOS Virtual Disk Drive",
+            "IDE CH-1 : None",
+            "",
+            "BunOS Plug and Play BIOS Extension v1.0A",
+            "Copyright (C) 1995-1998 BunOS Corp.",
+            "",
+            "Starting BunOS..."
+          ];
+
+          /* Type out POST lines gradually */
+          let pi = 0;
+          function typePOST() {
+            if (gen !== window._bootGen) return;
+            if (pi >= postLines.length) {
+              setTimeout(() => { if (gen === window._bootGen) startLoading(); }, 200);
+              return;
+            }
+            if (pi === 4) {
+              /* Memory test animation: cycle numbers */
+              let mem = 0;
+              const memTimer = setInterval(() => {
+                if (gen !== window._bootGen) { clearInterval(memTimer); return; }
+                mem += 1024;
+                if (mem > 65536) mem = 65536;
+                postLines[4] = "Memory   : Testing...               " + String(mem).padStart(7) + "K OK";
+                postText.textContent = postLines.slice(0, pi + 1).join("\n");
+                if (mem >= 65536) { clearInterval(memTimer); pi++; setTimeout(typePOST, 150); }
+              }, 15);
+              postText.textContent = postLines.slice(0, pi + 1).join("\n");
+              return;
+            }
+            postText.textContent = postLines.slice(0, pi + 1).join("\n");
+            pi++;
+            setTimeout(typePOST, 80 + Math.random() * 100);
+          }
+          typePOST();
+
+          /* ---- Phase 2: BunOS Loading ---- */
+          function startLoading() {
+            if (gen !== window._bootGen) return;
+            phase1.classList.remove("visible");
+            phase2.classList.add("visible");
+
+            const duration = 2000 + Math.random() * 1000; /* random 2-3s */
+            const startTime = Date.now();
+
+            function updateBar() {
+              if (gen !== window._bootGen) return;
+              const elapsed = Date.now() - startTime;
+              const pct = Math.min(100, (elapsed / duration) * 100);
+              bar.style.width = pct + "%";
+
+              if (pct < 80) {
+                /* Random sub-texts during loading */
+                const msgs = [
+                  "Loading system registry...",
+                  "Initializing virtual devices...",
+                  "Checking file system...",
+                  "Loading shell components...",
+                  "Configuring desktop...",
+                  "Applying user settings...",
+                  "Starting network services...",
+                  "Optimizing performance..."
+                ];
+                document.getElementById("boot-subtext").textContent =
+                  msgs[Math.floor(Math.random() * msgs.length)];
+              } else if (pct >= 80 && pct < 100) {
+                document.getElementById("boot-subtext").textContent = "Finalizing startup...";
+              }
+
+              if (pct >= 100) {
+                bar.style.width = "100%";
+                document.getElementById("boot-subtext").textContent = "Welcome to BunOS!";
+                /* Fade out */
+                setTimeout(() => {
+                  boot.classList.add("fade-out");
+                  setTimeout(() => {
+                    boot.classList.remove("visible", "fade-out");
+                  }, 350);
+                }, 300);
+                return;
+              }
+              requestAnimationFrame(updateBar);
+            }
+            updateBar();
+          }
+        }
+
+        /* Delay the boot sequence to let terminal close first */
+        function onBootKey(e) { e.preventDefault(); startBootSequence(); }
+        function onBootClick(e) { e.preventDefault(); startBootSequence(); }
+        document.addEventListener("keydown", onBootKey);
+        bsod.addEventListener("click", onBootClick);
+        return;
+      }
+
+      if (e.data.type === "terminal-exit") {
+        const win = document.getElementById("win-terminal");
+        if (win) {
+          const closeBtn = win.querySelector('[data-act="close"]');
+          if (closeBtn) closeBtn.click();
+        }
+      }
     });
 
     /* ===================== CLOCK ===================== */

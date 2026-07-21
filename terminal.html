@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Terminal</title>
+<link rel="stylesheet" href="assets/styles/win98.css" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: #000; }
+  body {
+    font-family: "Courier New", "Lucida Console", monospace;
+    font-size: 14px;
+    -webkit-font-smoothing: none;
+    color: #c0c0c0;
+  }
+  #screen {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #000;
+    position: relative;
+  }
+  #output {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.3;
+  }
+  #cursor {
+    display: inline-block;
+    width: 8px;
+    height: 15px;
+    background: #c0c0c0;
+    vertical-align: text-bottom;
+    margin-left: 1px;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+  #output::-webkit-scrollbar { width: 16px; height: 16px; }
+  #output::-webkit-scrollbar-track { background: #000; }
+  #output::-webkit-scrollbar-thumb {
+    background: #808080;
+    border: 2px solid #000;
+  }
+</style>
+</head>
+<body>
+<div id="screen">
+  <div id="output"></div>
+</div>
+<script>
+(function() {
+  const output = document.getElementById("output");
+
+  /* ========== Virtual Filesystem ========== */
+  function makeDir(children) { return { type:"dir", children: children || {} }; }
+  function makeFile(size, content) { return { type:"file", size, content }; }
+
+  const FS = makeDir({
+    "SYSTEM": makeDir({
+      "KERNEL": makeDir({
+        "VMM32.VXD": makeFile(123456, "[BunOS Virtual Memory Manager 32-bit Driver]"),
+        "USER.EXE": makeFile(234567, "[BunOS User Executable]"),
+        "KRNL386.EXE": makeFile(345678, "[BunOS Kernel 386 Executable]"),
+        "GDLEXE": makeFile(112233, "[Graphics Device Interface Library]")
+      }),
+      "COMMAND": makeDir({
+        "DELTREE.EXE": makeFile(32000, "[Folder Deletion Utility]")
+      }),
+      "HELP": makeDir({
+        "README.TXT": makeFile(512, "Welcome to BunOS!\n\nFor help, click Start > Help."),
+        "LICENSE.TXT": makeFile(1024, "BunOS 1.0\nEnd-User License Agreement\n\n... (licensed content)")
+      }),
+      "SYS.COM": makeFile(10240, "[BunOS Boot Loader]"),
+      "SYS.INI": makeFile(1536, "[BunOS]\nload=\nrun=\n"),
+      "HIMEM.SYS": makeFile(8192, "[Extended Memory Manager]"),
+      "DOSX.EXE": makeFile(16384, "[MS-DOS Extender for BunOS]")
+    }),
+    "PROGRA~1": makeDir({
+      "ACCESS": makeDir({
+        "WORDPAD.EXE": makeFile(456789, "[WordPad Word Processor]"),
+        "CALC.EXE": makeFile(23456, "[Calculator Application]")
+      }),
+      "INTERNET": makeDir({
+        "IEXPLORE.EXE": makeFile(789012, "[Internet Explorer Web Browser]")
+      })
+    }),
+    "MYDOCU~1": makeDir({
+      "DOWNLOADED": makeDir({
+        "README.TXT": makeFile(256, "This folder contains downloaded files from the Internet.")
+      }),
+      "RECEIPTS": makeDir({
+        "RECEIPT1.TXT": makeFile(128, "Purchase: Nothing of importance\nDate: 01-01-1999\n"),
+        "RECEIPT2.TXT": makeFile(96, "Purchase: Virtual Floppy Disk\nDate: 02-01-1999\n")
+      })
+    }),
+    "TEMP": makeDir({
+      "CACHE": makeDir(),
+      "TMP": makeDir()
+    }),
+    "AUTOEXEC.BAT": makeFile(128, "@ECHO OFF\nPROMPT $p$g\nPATH=C:\\SYSTEM;C:\\SYSTEM\\COMMAND\nSET TEMP=C:\\TEMP\nSET TMP=C:\\TEMP\n"),
+    "CONFIG.SYS": makeFile(256, "DEVICE=C:\\SYSTEM\\HIMEM.SYS\nDOS=HIGH,UMB\nFILES=30\nBUFFERS=20\nSTACKS=9,256\n"),
+    "COMMAND.COM": makeFile(54321, "[MS-DOS Command Interpreter]")
+  });
+
+  /* Short-name → display name mapping for CD/DIR display */
+  const SHORT_TO_LONG = {
+    "SYSTEM": "SYSTEM",
+    "PROGRA~1": "Program Files",
+    "MYDOCU~1": "My Documents",
+    "TEMP": "TEMP"
+  };
+  const LONG_TO_SHORT = {};
+  for (const [k,v] of Object.entries(SHORT_TO_LONG)) { LONG_TO_SHORT[v.toUpperCase()] = k; }
+
+  const PROTECTED_NAMES = new Set(
+    Object.keys(SHORT_TO_LONG).map(s => s.toUpperCase())
+  );
+
+  /* ========== State ========== */
+  let cwd = "C:\\";
+  const lines = [];
+  let buffer = "";
+  let bsodActive = false;
+  // dir /p pager
+  let pagerActive = false;
+  let pagerQueue = [];
+  let pagerIdx = 0;
+
+  /* ========== Helpers ========== */
+  function esc(s) {
+    return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  function padEnd(s, len) {
+    s = String(s);
+    while (s.length < len) s += " ";
+    return s;
+  }
+
+  function padStart(s, len) {
+    s = String(s);
+    while (s.length < len) s = " " + s;
+    return s;
+  }
+
+  function fmtSize(n) {
+    const s = String(n);
+    let r = "";
+    for (let i = s.length - 1, c = 0; i >= 0; i--, c++) {
+      if (c && c % 3 === 0) r = "," + r;
+      r = s[i] + r;
+    }
+    return r;
+  }
+
+  function fmtDate() { return "01-01-1999"; }
+  function fmtTime() { return "00:00"; }
+
+  /* ========== Filesystem Navigation ========== */
+  function findChild(dir, name) {
+    const lu = name.toUpperCase();
+    for (const key of Object.keys(dir.children)) {
+      if (key.toUpperCase() === lu) return { node: dir.children[key], name: key };
+      const dn = dir.children[key].displayName;
+      if (dn && dn.toUpperCase() === lu) return { node: dir.children[key], name: key };
+    }
+    return null;
+  }
+
+  /* Resolve a path string to { node, parent, path } or null.
+     parent is the containing directory node. path is the resolved C:\... string. */
+  function resolvePath(input) {
+    let p = input.replace(/\//g, "\\");
+    let startNode = FS;
+    let startPath = "C:";
+    if (p.match(/^[a-zA-Z]:\\?/)) {
+      p = p.replace(/^[a-zA-Z]:\\?/, "");
+      startNode = FS; startPath = "C:";
+    } else if (p.startsWith("\\")) {
+      p = p.slice(1);
+      startNode = FS; startPath = "C:";
+    } else {
+      startNode = getNode(cwd).node;
+      startPath = cwd.replace(/\\$/, "");
+    }
+    if (!p) return { node: startNode, parent: null, path: startPath + "\\" };
+    const parts = p.split("\\").filter(s => s);
+    let cur = startNode, par = null, curPath = startPath;
+    for (const part of parts) {
+      if (part === ".") continue;
+      if (part === "..") {
+        if (curPath === "C:") return null;
+        const idx = curPath.lastIndexOf("\\");
+        curPath = idx === -1 ? "C:" : curPath.slice(0, idx);
+        cur = getNode(curPath + "\\").node;
+        par = null;
+        continue;
+      }
+      if (cur.type !== "dir") return null;
+      const found = findChild(cur, part);
+      if (!found) return null;
+      par = cur;
+      cur = found.node;
+      curPath += "\\" + found.name;
+    }
+    return { node: cur, parent: par, path: curPath + (cur.type === "dir" ? "\\" : "") };
+  }
+
+  function getNode(path) {
+    return resolvePath(path);
+  }
+
+  /* Get a node from a potentially relative path. Returns { node, parent, path } or null. */
+  function resolveFromCwd(input) {
+    let p = input.trim();
+    if (p.startsWith('"') && p.endsWith('"')) p = p.slice(1, -1);
+    return resolvePath(p);
+  }
+
+  /* ========== Render ========== */
+  function render() {
+    let html = "";
+    for (const line of lines) {
+      html += esc(line) + "\n";
+    }
+    if (!bsodActive) {
+      html += esc(`${cwd}>${buffer}`);
+      if (!pagerActive) html += '<span id="cursor"></span>';
+    }
+    output.innerHTML = html;
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function print(text) {
+    if (text !== undefined && text !== null) {
+      const parts = String(text).split("\n");
+      for (const p of parts) lines.push(p);
+    }
+    render();
+  }
+
+  function clearScreen() {
+    lines.length = 0;
+    render();
+  }
+
+  /* ========== BSOD ========== */
+  function showBSOD() {
+    bsodActive = true;
+    try {
+      parent.postMessage({type:"terminal-bsod-show"}, "*");
+    } catch(_) {}
+  }
+
+  /* Protected files that trigger BSOD on access */
+  function isProtectedFile(name) {
+    return name.toUpperCase() === "AUTOEXEC.BAT";
+  }
+
+  function dismissBSOD() {
+    bsodActive = false;
+  }
+
+  /* ========== Pager (dir /p) ========== */
+  function pagerShow() {
+    if (pagerIdx >= pagerQueue.length) {
+      pagerActive = false;
+      pagerQueue = [];
+      pagerIdx = 0;
+      render();
+      return;
+    }
+    const count = Math.max(1, Math.floor((output.clientHeight || 400) / (14 * 1.3)) - 2);
+    const chunk = pagerQueue.slice(pagerIdx, pagerIdx + count);
+    for (const l of chunk) lines.push(l);
+    pagerIdx += count;
+    if (pagerIdx >= pagerQueue.length) {
+      pagerActive = false;
+      pagerQueue = [];
+      pagerIdx = 0;
+      lines.push("");
+      lines.push("Press any key to continue...");
+      pagerActive = true;
+      pagerQueue = null; // sentinel meaning "done, prompt for any key"
+      render();
+      return;
+    }
+  }
+
+  /* ========== Command Handlers ========== */
+  function parseArgs(str) {
+    const a = [];
+    let cur = "", q = false;
+    for (const ch of str) {
+      if (ch === '"') { q = !q; continue; }
+      if (ch === ' ' && !q) { if (cur) { a.push(cur); cur = ""; } continue; }
+      cur += ch;
+    }
+    if (cur) a.push(cur);
+    return a;
+  }
+
+  function isProtected(name) {
+    const up = name.toUpperCase();
+    if (PROTECTED_NAMES.has(up)) return true;
+    const ln = SHORT_TO_LONG[up];
+    if (ln && PROTECTED_NAMES.has(ln.toUpperCase())) return true;
+    return false;
+  }
+
+  function cmdDir(args) {
+    let wide = false, pause = false;
+    for (const a of args) {
+      const lc = a.toLowerCase();
+      if (lc === "/w" || lc === "-w") wide = true;
+      if (lc === "/p" || lc === "-p") pause = true;
+    }
+    const target = args.length && !args[0].startsWith("/") ? args[0] : ".";
+    const resolved = resolveFromCwd(target);
+    if (!resolved || resolved.node.type !== "dir") {
+      return "The system cannot find the path specified.";
+    }
+    const dir = resolved.node;
+    const displayPath = resolved.path;
+    const out = [];
+    out.push(" Volume in drive C is DISK_VOL1");
+    out.push(" Directory of " + displayPath);
+    out.push("");
+    const entries = Object.entries(dir.children).sort((a,b) => {
+      const aIsDir = a[1].type === "dir";
+      const bIsDir = b[1].type === "dir";
+      if (aIsDir && !bIsDir) return -1;
+      if (!aIsDir && bIsDir) return 1;
+      return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
+    });
+    if (entries.length === 0) {
+      out.push("File Not Found");
+    } else if (wide) {
+      let row = "";
+      for (const [name, node] of entries) {
+        const label = node.type === "dir" ? "[" + name + "]" : name;
+        if (row.length + label.length + 2 > 72) {
+          out.push(row);
+          row = label + "  ";
+        } else {
+          if (row) row += "  ";
+          row += label;
+        }
+      }
+      if (row) out.push(row);
+    } else {
+      out.push(padEnd(".", 22) + "<DIR>        " + fmtDate() + "  " + fmtTime());
+      if (resolved.parent) {
+        out.push(padEnd("..", 22) + "<DIR>        " + fmtDate() + "  " + fmtTime());
+      }
+      let fileCount = 0, totalSize = 0, dirCount = 0;
+      for (const [name, node] of entries) {
+        const displayName = node.type === "dir" ? name : name;
+        const padded = padEnd(displayName, 20);
+        if (node.type === "dir") {
+          out.push(padded + "  <DIR>        " + fmtDate() + "  " + fmtTime());
+          dirCount++;
+        } else {
+          const sizeStr = padStart(fmtSize(node.size), 12);
+          out.push(padded + "  " + sizeStr + " " + fmtDate() + "  " + fmtTime());
+          fileCount++;
+          totalSize += node.size;
+        }
+      }
+      out.push("        " + fileCount + " File(s)        " + fmtSize(totalSize) + " bytes");
+      out.push("        " + dirCount + " Dir(s)     " + fmtSize(104857600) + " bytes free");
+    }
+    if (pause) {
+      pagerActive = true;
+      pagerQueue = out;
+      pagerIdx = 0;
+      pagerShow();
+      return null;
+    }
+    return out.join("\n");
+  }
+
+  function cmdCd(args) {
+    if (args.length === 0) return cwd;
+    const target = args.join(" ");
+    const resolved = resolveFromCwd(target);
+    if (!resolved || resolved.node.type !== "dir") {
+      return "The system cannot find the path specified.";
+    }
+    cwd = resolved.path;
+    return null;
+  }
+
+  function cmdMd(args) {
+    if (args.length === 0) return "The syntax of the command is incorrect.";
+    const name = args[0];
+    const resolved = resolveFromCwd(".");
+    if (!resolved) return "The system cannot find the path specified.";
+    const parent = resolved.node;
+    if (parent.type !== "dir") return "The system cannot find the path specified.";
+    if (findChild(parent, name)) return "A subdirectory or file " + name + " already exists.";
+    parent.children[name] = makeDir();
+    return null;
+  }
+
+  function cmdRd(args) {
+    if (args.length === 0) return "The syntax of the command is incorrect.";
+    const rawTarget = args.join(" ");
+    const resolved = resolveFromCwd(rawTarget);
+    if (!resolved) return "The system cannot find the path specified.";
+    if (resolved.node.type !== "dir") return "The directory name is invalid.";
+    if (!resolved.parent) return "Cannot remove current directory.";
+
+    const dirName = rawTarget.split(/[\\\/]/).filter(s=>s).pop() || rawTarget;
+
+    /* BSOD check: is the target's name a protected direct child of C:\ ? */
+    const parentPath = resolved.parent === FS ? "C:\\" : "";
+    if (resolved.parent === FS && isProtected(dirName)) {
+      showBSOD();
+      return null;
+    }
+    /* Also check if resolved path is C:\ itself */
+    if (resolved.path === "C:\\") {
+      showBSOD();
+      return null;
+    }
+
+    if (Object.keys(resolved.node.children).length > 0) {
+      return "The directory is not empty.\n" + padEnd("", 13) + "Use DELTREE if you want to delete the entire directory.";
+    }
+    delete resolved.parent.children[Object.keys(resolved.parent.children).find(k =>
+      k.toUpperCase() === dirName.toUpperCase()
+    )];
+    return null;
+  }
+
+  function cmdDel(args) {
+    if (args.length === 0) return "The syntax of the command is incorrect.";
+    const rawTarget = args.join(" ");
+    const resolved = resolveFromCwd(rawTarget);
+    if (!resolved) return "The system cannot find the file specified.";
+    if (resolved.node.type === "dir") return "Access is denied.";
+    const parts = resolved.path.split("\\").filter(s => s);
+    const fileName = parts[parts.length - 1];
+    if (fileName && isProtectedFile(fileName)) { showBSOD(); return null; }
+    if (resolved.parent) {
+      /* find the key to delete */
+      for (const k of Object.keys(resolved.parent.children)) {
+        if (resolved.parent.children[k] === resolved.node) {
+          delete resolved.parent.children[k];
+          break;
+        }
+      }
+    }
+    return null;
+  }
+
+  function cmdDeltree(args) {
+    if (args.length === 0) return "The syntax of the command is incorrect.";
+    const rawTarget = args.join(" ");
+    const resolved = resolveFromCwd(rawTarget);
+    if (!resolved) return "The system cannot find the path specified.";
+    if (resolved.node.type !== "dir") return "Access is denied.";
+
+    const dirName = rawTarget.split(/[\\\/]/).filter(s=>s).pop() || rawTarget;
+
+    /* BSOD check */
+    if (resolved.parent === FS && isProtected(dirName)) {
+      showBSOD();
+      return null;
+    }
+    if (resolved.path === "C:\\") {
+      showBSOD();
+      return null;
+    }
+
+    /* Recursively delete */
+    if (resolved.parent) {
+      for (const k of Object.keys(resolved.parent.children)) {
+        if (resolved.parent.children[k] === resolved.node) {
+          delete resolved.parent.children[k];
+          break;
+        }
+      }
+    }
+    return "Deleting " + resolved.path + "...";
+  }
+
+  function cmdCls() {
+    clearScreen();
+    return "CLS_DONE";
+  }
+
+  function cmdEcho(args) {
+    if (args.length === 0) return "ECHO is on.";
+    return args.join(" ");
+  }
+
+  function cmdType(args) {
+    if (args.length === 0) return "The syntax of the command is incorrect.";
+    const rawTarget = args.join(" ");
+    const resolved = resolveFromCwd(rawTarget);
+    if (!resolved) return "The system cannot find the file specified.";
+    if (resolved.node.type !== "file") return "Access is denied.";
+    const parts = resolved.path.split("\\").filter(s => s);
+    const fileName = parts[parts.length - 1];
+    if (fileName && isProtectedFile(fileName)) { showBSOD(); return null; }
+    return resolved.node.content || "";
+  }
+
+  function cmdVer() {
+    return "BunOS [Version 1.0.0]";
+  }
+
+  function cmdHelp() {
+    return [
+      "Available commands in Terminal:",
+      "",
+      "CD or CHDIR    Displays or changes the current directory",
+      "CLS            Clears the screen",
+      "DEL or ERASE   Deletes one or more files",
+      "DELTREE        Deletes a directory and all its subdirectories",
+      "DIR            Displays a list of files and subdirectories",
+      "ECHO           Displays messages and toggles command echoing",
+      "EXIT           Quits the Terminal",
+      "HELP           Displays this help message",
+      "MD or MKDIR    Creates a directory",
+      "PING           Sends ICMP echo requests to a host",
+      "RD or RMDIR    Removes (deletes) an empty directory",
+      "TYPE           Displays the contents of a text file",
+      "VER            Displays the BunOS version",
+      "",
+      "For more information on a command, type HELP command-name"
+    ].join("\n");
+  }
+
+  function cmdExit() {
+    try {
+      parent.postMessage({type:"terminal-exit"}, "*");
+    } catch(_) {}
+    return "CLS_DONE";
+  }
+
+  /* ========== Ping ========== */
+  let pingActive = false;
+  let pingTimer = null;
+  let pingCount = 0;
+  let pingTotal = 0;
+  let pingTarget = "";
+  let pingTimes = [];
+
+  function cmdPing(args) {
+    if (args.length === 0) return "Usage: ping [-t] <hostname>";
+    let continuous = false;
+    let host = "";
+    for (const a of args) {
+      if (a === "-t") { continuous = true; continue; }
+      host += host ? " " + a : a;
+    }
+    if (!host) return "Usage: ping [-t] <hostname>";
+
+    pingActive = true;
+    pingCount = 0;
+    pingTotal = continuous ? Infinity : 4;
+    pingTarget = host;
+    pingTimes = [];
+    print("");
+
+    pingTimer = setInterval(() => {
+      if (pingCount >= pingTotal) {
+        clearInterval(pingTimer);
+        pingTimer = null;
+        finishPing();
+        return;
+      }
+      pingCount++;
+      const ms = Math.floor(Math.random() * 126 + 1);
+      pingTimes.push(ms);
+      const ttl = Math.floor(Math.random() * 64 + 64);
+      print("Reply from " + pingTarget + ": bytes=32 time=" + ms + "ms TTL=" + ttl);
+    }, 800);
+
+    return null;
+  }
+
+  function finishPing() {
+    if (pingTimes.length === 0) return;
+    const min = Math.min(...pingTimes);
+    const max = Math.max(...pingTimes);
+    const avg = Math.round(pingTimes.reduce((a, b) => a + b, 0) / pingTimes.length);
+    const sent = pingTimes.length;
+    print("");
+    print("Ping statistics for " + pingTarget + ":");
+    print("    Packets: Sent = " + sent + ", Received = " + sent + ", Lost = 0 (0% loss),");
+    print("Approximate round trip times in milli-seconds:");
+    print("    Minimum = " + min + "ms, Maximum = " + max + "ms, Average = " + avg + "ms");
+    pingActive = false;
+    render();
+  }
+
+  function stopPing() {
+    if (pingTimer) {
+      clearInterval(pingTimer);
+      pingTimer = null;
+    }
+    if (pingActive) {
+      finishPing();
+    }
+  }
+  const COMMANDS = {
+    "cd": cmdCd, "chdir": cmdCd,
+    "cls": cmdCls,
+    "del": cmdDel, "erase": cmdDel,
+    "deltree": cmdDeltree,
+    "dir": cmdDir, "ls": cmdDir,
+    "echo": cmdEcho,
+    "exit": cmdExit,
+    "help": cmdHelp,
+    "md": cmdMd, "mkdir": cmdMd,
+    "ping": cmdPing,
+    "rd": cmdRd, "rmdir": cmdRd, "rm": cmdRd,
+    "type": cmdType,
+    "ver": cmdVer,
+    "?": cmdHelp
+  };
+
+  function executeCommand(raw) {
+    if (!raw) return null;
+    const args = parseArgs(raw);
+    const cmd = args[0].toLowerCase();
+    const rest = args.slice(1);
+    if (COMMANDS[cmd]) {
+      return COMMANDS[cmd](rest);
+    }
+    /* Check if the input is a path to a protected file (BSOD on access attempt) */
+    const resolved = resolveFromCwd(raw);
+    if (resolved) {
+      const parts = resolved.path.split("\\").filter(s => s);
+      const fname = parts[parts.length - 1];
+      if (fname && isProtectedFile(fname)) { showBSOD(); return null; }
+    }
+    return "Bad command or file name";
+  }
+
+  /* ========== Submit ========== */
+  function submit() {
+    if (pagerActive) {
+      if (pagerQueue === null) {
+        pagerActive = false;
+        lines.length = lines.lastIndexOf("Press any key to continue...");
+        if (lines[lines.length-1] === "") lines.pop();
+        clearScreen(); /* On keypress after pagination, we just continue naturally */
+        /* Re-show the dir output minus the "Press any key" lines */
+        /* Actually, simplest: just clear and render prompt */
+        pagerQueue = [];
+        render();
+        return;
+      }
+      pagerShow();
+      return;
+    }
+
+    const cmd = buffer;
+    buffer = "";
+    if (cmd.trim()) {
+      print(`${cwd}>${cmd}`);
+    } else {
+      print(`${cwd}>`);
+    }
+    const result = executeCommand(cmd.trim());
+    if (result === "CLS_DONE") return;
+    if (result !== undefined && result !== null) {
+      print(result);
+    }
+    render();
+  }
+
+//  document.addEventListener("contextmenu", (e) => e.preventDefault());
+
+  /* ========== Input ========== */
+  document.addEventListener("keydown", (e) => {
+    if (bsodActive) {
+      e.preventDefault();
+      return;
+    }
+    if (pagerActive) {
+      e.preventDefault();
+      submit();
+      return;
+    }
+    if (pingActive) {
+      if (e.ctrlKey && (e.key === "c" || e.key === "C")) {
+        e.preventDefault();
+        stopPing();
+        print("^C");
+        render();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        stopPing();
+        print("^C");
+        render();
+      } else {
+        e.preventDefault();
+      }
+      return;
+    }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submit();
+    } else if (e.key === "Backspace") {
+      e.preventDefault();
+      buffer = buffer.slice(0, -1);
+      render();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      buffer = "";
+      render();
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      /* simple tab completion */
+    } else if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+      e.preventDefault();
+      buffer += e.key;
+      render();
+    }
+  });
+
+  /* ========== postMessage Protocol ========== */
+  function onHostMessage(e) {
+    if (!e.data) return;
+    if (e.data.type === "terminal-shutdown") {
+      try { document.body.innerHTML = ""; } catch(_) {}
+      return;
+    }
+    if (e.data.type === "terminal-bsod-dismissed") {
+      dismissBSOD();
+      return;
+    }
+    if (e.data.type === "terminal-exit") {
+      try { document.body.innerHTML = ""; } catch(_) {}
+      return;
+    }
+  }
+  window.addEventListener("message", onHostMessage);
+
+  /* Send initial resize to host, like minefield does */
+  try {
+    parent.postMessage({type:"terminal-resize", width:540, height:300}, "*");
+  } catch(_) {}
+
+  /* ========== Init ========== */
+  print("BunOS [Version 1.0.0]");
+  print("   (C)Copyright BunOS 1998.");
+  print("");
+  render();
+})();
+</script>
+</body>
+</html>
