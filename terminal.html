@@ -554,8 +554,10 @@
   let pingTotal = 0;
   let pingTarget = "";
   let pingTimes = [];
+  let internetConnected = true; /* updated by parent page via postMessage */
 
   function cmdPing(args) {
+    if (!internetConnected) return "Ping request could not find host. Check the name and try again.";
     if (args.length === 0) return "Usage: ping [-t] <hostname>";
     let continuous = false;
     let host = "";
@@ -740,6 +742,10 @@
     }
     if (e.data.type === "terminal-bsod-dismissed") {
       dismissBSOD();
+      return;
+    }
+    if (e.data.type === "internet-state") {
+      internetConnected = !!e.data.connected;
       return;
     }
     if (e.data.type === "terminal-exit") {

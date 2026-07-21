@@ -424,6 +424,7 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
   <!-- ============ BOOT SCREEN (BIOS POST + BunOS loading, triggered after BSOD) ============ -->
   <audio id="boot-audio" preload="auto" src="assets/sounds/bios-post.mp3"></audio>
   <audio id="welcome-audio" preload="auto" src="assets/sounds/welcome.mp3"></audio>
+  <audio id="inet-audio" preload="auto" src="assets/sounds/internet-con.mp3"></audio>
   <div id="boot-screen" tabindex="-1">
     <div id="boot-phase1" class="visible">
       <div id="boot-phase1-inner">
@@ -455,10 +456,10 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
 
     <!-- Desktop icons -->
     <div class="absolute top-2 left-2 flex flex-col gap-2">
-      <a class="desktop-icon" href="https://brunots.dev/" target="_blank" rel="noopener" aria-label="Open brunots.dev">
+      <div class="desktop-icon" tabindex="0" data-open="win-internet" role="button" aria-label="Open Internet">
         <div style="font-size:32px">🌐</div>
-        <div>brunots.dev</div>
-      </a>
+        <div>Internet</div>
+      </div>
       <div class="desktop-icon" tabindex="0" data-open="win-projects" role="button" aria-label="Open my projects">
         <div style="font-size:32px">📁</div>
         <div>My Projects</div>
@@ -629,11 +630,50 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
       </div>
     </section>
 
+    <!-- ============ WINDOW: Internet (Dial-Up Connection) ============ -->
+    <section class="window bevel-out" id="win-internet" style="left:22%; top:22%; width:340px; height:280px; z-index:11; display:none;" aria-label="Internet connection">
+      <div class="title-bar">
+        <span style="margin-right:auto">🌐 Internet — Dial-Up Connection</span>
+        <button class="win98-btn" data-act="min" aria-label="Minimize">_</button>
+        <button class="win98-btn" data-act="max" aria-label="Maximize">▢</button>
+        <button class="win98-btn" data-act="close" aria-label="Close">✕</button>
+      </div>
+      <div style="flex:1; margin:6px; display:flex; flex-direction:column; gap:6px; font-size:12px;">
+        <div class="bevel-sunken" style="background:#fff; padding:8px; display:flex; align-items:center; gap:10px;">
+          <div id="inet-status-icon" style="font-size:26px; line-height:1;">🟢</div>
+          <div>
+            <div style="font-weight:bold;">Status: <span id="inet-status-text">Connected</span></div>
+            <div id="inet-detail" style="font-size:11px; color:#444;">Connected to BunOSNet at 56,000 bps</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <label for="inet-conn-name" style="white-space:nowrap; min-width:60px;">Connection:</label>
+          <input id="inet-conn-name" value="BunOSNet" readonly style="flex:1; box-sizing:border-box; font:inherit; padding:2px 4px; background:#c0c0c0; color:#555; border:2px inset #eee #808080 #808080 #eee;">
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <label for="inet-user" style="white-space:nowrap; min-width:60px;">User:</label>
+          <input id="inet-user" value="admin" disabled style="flex:1; box-sizing:border-box; font:inherit; padding:2px 4px;">
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <label for="inet-pass" style="white-space:nowrap; min-width:60px;">Password:</label>
+          <input id="inet-pass" value="bunos" disabled type="password" style="flex:1; box-sizing:border-box; font:inherit; padding:2px 4px;">
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <label style="white-space:nowrap; min-width:60px;">Phone:</label>
+          <input value="555-0199" disabled style="flex:1; box-sizing:border-box; font:inherit; padding:2px 4px;">
+        </div>
+        <div style="display:flex; gap:6px; justify-content:flex-end; margin-top:auto;">
+          <button class="win98-btn" id="inet-connect" style="min-width:84px;">Connect</button>
+          <button class="win98-btn" id="inet-cancel" style="min-width:84px;">Cancel</button>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ START MENU ============ -->
     <nav class="start-menu bevel-out" id="startMenu" aria-label="Start menu">
       <div class="start-menu-title">BrunoTS</div>
       <div class="p-1" style="position:relative;">
-        <a class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px; text-decoration:none; color:#000;" href="https://brunots.dev/" target="_blank" rel="noopener">🌐 brunots.dev</a>
+        <button class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px;" data-open="win-internet">🌐 Internet</button>
         <button class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px;" data-open="win-projects">📁 My Projects</button>
         <button class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px;" data-open="win-about">👤 About Me</button>
         <button class="win98-btn" style="display:block; width:100%; text-align:left; margin-bottom:2px;" data-open="win-cert">🏅 Laravel Cert</button>
@@ -1045,10 +1085,17 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
           ifr.addEventListener("load", function onLoad() {
             ifr.removeEventListener("load", onLoad);
             try { ifr.contentWindow.focus(); } catch(_) {}
+            /* Sync internet connection state on first load */
+            if (typeof window._internetConnected !== "undefined") {
+              try { ifr.contentWindow.postMessage({type:"internet-state", connected: window._internetConnected}, "*"); } catch(_) {}
+            }
           });
         } else if (ifr) {
-          // Already loaded — focus immediately on re-open
+          // Already loaded — focus immediately on re-open and sync internet state
           try { ifr.contentWindow.focus(); } catch(_) {}
+          if (typeof window._internetConnected !== "undefined") {
+            try { ifr.contentWindow.postMessage({type:"internet-state", connected: window._internetConnected}, "*"); } catch(_) {}
+          }
         }
       }
       // Re-create the taskbar entry if this window was previously closed/minimized
@@ -1068,6 +1115,104 @@ Press any key to continue <span id="bsod-cur">_</span></pre>
       el.addEventListener("keydown", (e) => { if (e.key === "Enter") openWin(id); });
     });
 
+    /* ========== Internet (Dial-Up Connection) ========== */
+    (function inetModule() {
+      const audio = document.getElementById("inet-audio");
+      const icon = document.getElementById("inet-status-icon");
+      const statusText = document.getElementById("inet-status-text");
+      const detail = document.getElementById("inet-detail");
+      const btn = document.getElementById("inet-connect");
+      const cancelBtn = document.getElementById("inet-cancel");
+      const CONNECT_DURATION = 22000; /* 22 seconds */
+      let state = "connected"; /* connected | disconnected | connecting */
+      let connectTimer = null;
+
+      function notifyTerminal(connected) {
+        window._internetConnected = connected;
+        const ifr = document.getElementById("terminal-iframe");
+        if (ifr && ifr.contentWindow && ifr.dataset.loaded === "1") {
+          ifr.contentWindow.postMessage({type:"internet-state", connected}, "*");
+        }
+      }
+
+      function apply() {
+        if (state === "connected") {
+          icon.textContent = "🟢";
+          statusText.textContent = "Connected";
+          detail.textContent = "Connected to BunOSNet at 56,000 bps";
+          btn.textContent = "Disconnect";
+          btn.disabled = false;
+          notifyTerminal(true);
+        } else if (state === "disconnected") {
+          icon.textContent = "🔴";
+          statusText.textContent = "Disconnected";
+          detail.textContent = "Not connected to BunOSNet";
+          btn.textContent = "Connect";
+          btn.disabled = false;
+          notifyTerminal(false);
+        } else { /* connecting */
+          icon.textContent = "🟡";
+          statusText.textContent = "Connecting...";
+          detail.textContent = "Dialing BunOSNet... please wait";
+          btn.textContent = "Disconnect";
+          btn.disabled = false;
+        }
+      }
+
+      btn.addEventListener("click", () => {
+        if (state === "connected") {
+          /* Disconnect */
+          if (connectTimer) { clearTimeout(connectTimer); connectTimer = null; }
+          if (audio) { audio.pause(); audio.currentTime = 0; }
+          state = "disconnected";
+          apply();
+        } else if (state === "disconnected") {
+          /* Connect */
+          state = "connecting";
+          apply();
+          if (audio) { audio.currentTime = 0; audio.play(); }
+          if (connectTimer) clearTimeout(connectTimer);
+          connectTimer = setTimeout(() => {
+            if (audio) { audio.pause(); audio.currentTime = 0; }
+            state = "connected";
+            apply();
+          }, CONNECT_DURATION);
+        } else { /* connecting → disconnect mid-way */
+          if (connectTimer) { clearTimeout(connectTimer); connectTimer = null; }
+          if (audio) { audio.pause(); audio.currentTime = 0; }
+          state = "disconnected";
+          apply();
+        }
+      });
+
+      cancelBtn.addEventListener("click", () => {
+        /* Close the internet window */
+        const win = document.getElementById("win-internet");
+        if (win) {
+          const closeBtn = win.querySelector('[data-act="close"]');
+          if (closeBtn) closeBtn.click();
+        }
+      });
+
+      /* If the window is closed while connecting, cancel the attempt and stop audio */
+      const winEl = document.getElementById("win-internet");
+      if (winEl) {
+        const closeEl = winEl.querySelector('[data-act="close"]');
+        if (closeEl) closeEl.addEventListener("click", () => {
+          if (state === "connecting") {
+            if (connectTimer) { clearTimeout(connectTimer); connectTimer = null; }
+            if (audio) { audio.pause(); audio.currentTime = 0; }
+            state = "disconnected";
+            apply();
+          }
+        });
+      }
+
+      /* Initialize the global flag */
+      window._internetConnected = true;
+
+      apply();
+    })();
     const startMenu = document.getElementById("startMenu");
     const startBtn = document.getElementById("startBtn");
     const programsBtn = document.getElementById("programsBtn");

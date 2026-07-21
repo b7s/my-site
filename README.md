@@ -50,6 +50,11 @@ Just...
 
 This project is **open source** and available for anyone to use as inspiration or foundation for their own projects. Feel free to explore, learn, and adapt!
 
+## 🔊 Sound Credits
+
+- **Sound effects** (BIOS POST, welcome, internet dial-up, etc.): [Pixabay Sound Effects](https://pixabay.com/sound-effects/)
+- **Music** (Music Play app): [MusicGPT](https://musicgpt.com/)
+
 ## 📫 Contact
 
 - **Email:** [me@brunots.dev](mailto:me@brunots.dev)
